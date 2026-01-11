@@ -12,37 +12,67 @@
     <meta property="og:description" content="Your gateway to unlimited entertainment. Stream thousands of movies and TV shows in crystal-clear HD. Updated daily with the latest releases.">
     <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=SIDS+Cinema">
     <meta name="twitter:card" content="summary_large_image">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-    
+
     <style>
         :root { 
-            --bg: #0a0a0f; 
-            --bg-secondary: #12121a;
-            --surface: #1a1a24; 
-            --surface-light: #242430;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent: #e50914; 
-            --accent-hover: #ff1a1a;
+            /* Modern Vibrant Color Scheme */
+            --bg: #0a0b14; 
+            --bg-secondary: #121321;
+            --surface: #1a1c2e; 
+            --surface-light: #242740;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Vibrant Accents */
+            --accent: #6366f1; /* Indigo */
+            --accent-hover: #818cf8;
             --accent-purple: #8b5cf6;
             --accent-pink: #ec4899;
             --accent-cyan: #06b6d4;
             --accent-green: #10b981;
             --accent-orange: #f97316;
             --accent-yellow: #fbbf24;
+            --accent-red: #ef4444;
+            
+            /* Text Colors */
             --text-main: #ffffff; 
             --text-secondary: #a1a1aa;
             --text-dim: #71717a;
-            --gradient-primary: linear-gradient(135deg, #e50914 0%, #ff6b6b 100%);
-            --gradient-premium: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-premium: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
             --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-            --shadow-glow: 0 0 40px rgba(229, 9, 20, 0.3);
+            --gradient-fire: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            
+            /* Shadows */
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
+            
+            /* Radius */
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-xl: 24px;
+            --radius-2xl: 32px;
+        }
+
+        /* Light Mode Variables */
+        body.light-mode {
+            --bg: #f8f9ff; 
+            --bg-secondary: #eef0ff;
+            --surface: #ffffff; 
+            --surface-light: #f0f2ff;
+            --glass: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --text-main: #1a1c2e; 
+            --text-secondary: #4a4a55;
+            --text-dim: #71717a;
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,6 +84,7 @@
             scroll-behavior: smooth; 
             overflow-x: hidden;
             line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* Custom Scrollbar */
@@ -77,14 +108,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(to bottom, rgba(10, 10, 15, 0.98), transparent);
+            background: linear-gradient(to bottom, rgba(10, 11, 20, 0.98), transparent);
             backdrop-filter: blur(20px);
             transition: all 0.3s ease;
         }
 
         header.scrolled {
-            background: rgba(10, 10, 15, 0.98);
+            background: rgba(10, 11, 20, 0.98);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        body.light-mode header.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .logo-container {
@@ -132,7 +168,7 @@
             font-size: 32px;
             font-weight: 700;
             letter-spacing: 4px;
-            background: linear-gradient(90deg, #fff 0%, #e50914 50%, #fff 100%);
+            background: linear-gradient(90deg, #fff 0%, #6366f1 50%, #fff 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -194,11 +230,12 @@
             gap: 10px;
             width: 280px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .search-box:focus-within {
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
 
         .search-box input {
@@ -214,6 +251,58 @@
 
         .search-box i { color: var(--text-dim); cursor: pointer; }
         .search-box i:hover { color: var(--accent); }
+
+        /* Search Recommendations */
+        .search-recommendations {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .recommendation-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .recommendation-item:hover {
+            background: var(--glass);
+        }
+
+        .recommendation-item img {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .recommendation-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .recommendation-meta {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
 
         .icon-btn {
             width: 42px;
@@ -251,6 +340,215 @@
             text-align: center;
         }
 
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-light);
+            transform: scale(1.1);
+        }
+
+        /* ==================== MOBILE SEARCH MODAL ==================== */
+        .mobile-search-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .mobile-search-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mobile-search-input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .mobile-search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .mobile-search-close {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mobile-search-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .mobile-search-results {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ==================== MOVIE INFO OVERLAY ==================== */
+        .movie-info-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .movie-info-box {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .movie-info-backdrop {
+            position: relative;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .movie-info-backdrop::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--surface) 0%, transparent 100%);
+        }
+
+        .movie-info-content {
+            padding: 20px;
+            position: relative;
+            margin-top: -60px;
+        }
+
+        .movie-info-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .movie-info-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .movie-info-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .movie-info-desc {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .movie-info-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .movie-info-actions .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        .close-info {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
         /* ==================== BILLBOARD/HERO ==================== */
         .billboard {
             position: relative;
@@ -280,6 +578,12 @@
             height: 100%;
             background-size: cover;
             background-position: center top;
+            transform: scale(1);
+            transition: transform 10s ease;
+        }
+
+        .billboard-slide.active .billboard-bg {
+            transform: scale(1.05);
         }
 
         .billboard-overlay {
@@ -289,9 +593,9 @@
             width: 100%;
             height: 100%;
             background: 
-                linear-gradient(to right, rgba(10, 10, 15, 1) 0%, rgba(10, 10, 15, 0.7) 30%, transparent 60%),
-                linear-gradient(to top, rgba(10, 10, 15, 1) 0%, transparent 40%),
-                linear-gradient(to bottom, rgba(10, 10, 15, 0.5) 0%, transparent 20%);
+                linear-gradient(to right, rgba(10, 11, 20, 1) 0%, rgba(10, 11, 20, 0.7) 30%, transparent 60%),
+                linear-gradient(to top, rgba(10, 11, 20, 1) 0%, transparent 40%),
+                linear-gradient(to bottom, rgba(10, 11, 20, 0.5) 0%, transparent 20%);
         }
 
         .billboard-content {
@@ -306,7 +610,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--accent);
+            background: var(--gradient-fire);
             color: white;
             padding: 6px 14px;
             border-radius: 4px;
@@ -315,6 +619,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
 
         .billboard-badge i { font-size: 10px; }
@@ -346,6 +651,11 @@
             line-height: 1.1;
             margin-bottom: 16px;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, #fff 0%, #6366f1 50%, #fff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s linear infinite;
         }
 
         .billboard-meta {
@@ -362,16 +672,24 @@
             gap: 6px;
             font-size: 14px;
             color: var(--text-secondary);
+            background: var(--glass);
+            padding: 4px 10px;
+            border-radius: 4px;
         }
 
-        .meta-item.rating { color: var(--accent-yellow); font-weight: 700; }
+        .meta-item.rating { 
+            color: var(--accent-yellow); 
+            font-weight: 700; 
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+        }
+        
         .meta-item.quality { 
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 12px;
             font-weight: 700;
             font-size: 11px;
+            text-transform: uppercase;
         }
 
         .billboard-desc {
@@ -405,18 +723,34 @@
             border: none;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 8px 30px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
             transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(229, 9, 20, 0.5);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
         }
 
         .btn-secondary {
@@ -429,6 +763,17 @@
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-3px);
+        }
+
+        .btn-premium {
+            background: var(--gradient-premium);
+            color: white;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(6, 182, 212, 0.5);
         }
 
         .billboard-indicators {
@@ -475,11 +820,16 @@
             left: 0;
             right: 0;
             z-index: 999;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(10, 11, 20, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid var(--glass-border);
             padding: 8px 0;
             display: none;
+        }
+
+        body.light-mode .mini-taskbar {
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         @media (max-width: 768px) {
@@ -549,12 +899,14 @@
             background: var(--surface-light);
             color: var(--text-main);
             border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
         .quick-chip.active {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         .quick-chip i { font-size: 14px; }
@@ -580,7 +932,9 @@
         }
 
         .section-title i {
-            color: var(--accent);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-size: 20px;
         }
 
@@ -599,9 +953,15 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            background: var(--glass);
         }
 
-        .view-all:hover { color: var(--accent); }
+        .view-all:hover { 
+            color: var(--text-main);
+            background: var(--surface-light);
+        }
 
         /* ==================== HORIZONTAL SCROLL ==================== */
         .scroll-row {
@@ -632,11 +992,12 @@
             cursor: pointer;
             background: var(--surface);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow-card);
         }
 
         .movie-card:hover {
             transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.3);
         }
 
         .movie-card .poster {
@@ -672,7 +1033,7 @@
         .play-icon {
             width: 60px;
             height: 60px;
-            background: var(--accent);
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -681,6 +1042,7 @@
             color: white;
             transform: scale(0);
             transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
 
         .movie-card:hover .play-icon {
@@ -703,23 +1065,29 @@
             font-size: 11px;
             font-weight: 700;
             backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .badge-rating {
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--accent-yellow);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.9), rgba(245, 158, 11, 0.9));
+            color: white;
             display: flex;
             align-items: center;
             gap: 4px;
         }
 
         .badge-quality {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
         }
 
         .badge-new {
             background: var(--accent-green);
+            color: white;
+        }
+
+        .badge-premium {
+            background: var(--gradient-premium);
             color: white;
         }
 
@@ -739,12 +1107,19 @@
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 5;
+            border: none;
+            outline: none;
         }
 
-        .fav-btn:hover { transform: scale(1.1); }
+        .fav-btn:hover { 
+            transform: scale(1.1); 
+            background: rgba(236, 72, 153, 0.3);
+        }
+        
         .fav-btn.active { 
             color: var(--accent-pink);
-            background: rgba(236, 72, 153, 0.2);
+            background: rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
         }
 
         .card-info {
@@ -788,6 +1163,11 @@
             align-items: flex-end;
             position: relative;
             cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .top10-card:hover {
+            transform: translateY(-5px);
         }
 
         .top10-number {
@@ -799,6 +1179,11 @@
             -webkit-text-stroke: 3px var(--text-dim);
             margin-right: -30px;
             z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .top10-card:hover .top10-number {
+            -webkit-text-stroke: 3px var(--accent);
         }
 
         .top10-poster {
@@ -809,10 +1194,12 @@
             position: relative;
             z-index: 2;
             transition: transform 0.3s ease;
+            box-shadow: var(--shadow-card);
         }
 
         .top10-card:hover .top10-poster {
             transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
         }
 
         .top10-poster img {
@@ -835,10 +1222,12 @@
             overflow: hidden;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: var(--shadow-card);
         }
 
         .genre-card:hover {
             transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
         }
 
         .genre-card img {
@@ -850,10 +1239,15 @@
         .genre-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(229, 9, 20, 0.8), rgba(139, 92, 246, 0.8));
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(139, 92, 246, 0.8));
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .genre-card:hover .genre-overlay {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
         }
 
         .genre-name {
@@ -861,6 +1255,7 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         /* ==================== CONTINUE WATCHING ==================== */
@@ -871,10 +1266,13 @@
             overflow: hidden;
             cursor: pointer;
             background: var(--surface);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-card);
         }
 
         .continue-card:hover {
             transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
         }
 
         .continue-backdrop {
@@ -901,12 +1299,13 @@
             transform: translate(-50%, -50%);
             width: 50px;
             height: 50px;
-            background: var(--accent);
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
 
         .continue-info {
@@ -927,7 +1326,7 @@
 
         .progress-fill {
             height: 100%;
-            background: var(--accent);
+            background: var(--gradient-primary);
             border-radius: 10px;
         }
 
@@ -956,6 +1355,7 @@
         .back-btn:hover {
             color: var(--text-main);
             background: var(--surface-light);
+            transform: translateX(-5px);
         }
 
         .player-container {
@@ -1003,12 +1403,14 @@
         .server-btn:hover {
             border-color: var(--accent);
             color: var(--text-main);
+            transform: translateY(-2px);
         }
 
         .server-btn.active {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         .content-details {
@@ -1024,6 +1426,7 @@
         .detail-poster {
             border-radius: var(--radius-lg);
             overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
 
         .detail-poster img {
@@ -1035,6 +1438,11 @@
             font-size: 28px;
             font-weight: 800;
             margin-bottom: 12px;
+            background: linear-gradient(90deg, #fff 0%, #6366f1 50%, #fff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s linear infinite;
         }
 
         .detail-meta {
@@ -1050,9 +1458,13 @@
             gap: 6px;
             color: var(--text-secondary);
             font-size: 14px;
+            background: var(--glass);
+            padding: 4px 10px;
+            border-radius: 4px;
         }
 
         .detail-meta .rating {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
             color: var(--accent-yellow);
             font-weight: 700;
         }
@@ -1076,6 +1488,13 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .genre-tag:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
         }
 
         /* Episodes */
@@ -1104,10 +1523,15 @@
             transition: all 0.3s ease;
         }
 
-        .season-tab:hover { color: var(--text-main); }
+        .season-tab:hover { 
+            color: var(--text-main);
+            transform: translateY(-2px);
+        }
+        
         .season-tab.active {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         .episode-grid {
@@ -1125,16 +1549,21 @@
             cursor: pointer;
             transition: all 0.3s ease;
             color: var(--text-secondary);
+            border: 1px solid transparent;
         }
 
         .episode-btn:hover { 
             background: var(--accent);
             color: white;
+            transform: translateY(-2px);
+            border-color: var(--accent);
         }
 
         .episode-btn.active {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         /* ==================== FAVORITES PAGE ==================== */
@@ -1155,7 +1584,11 @@
             gap: 12px;
         }
 
-        .page-title i { color: var(--accent-pink); }
+        .page-title i { 
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         /* ==================== FOOTER ==================== */
         footer {
@@ -1204,7 +1637,7 @@
         }
 
         .social-link:hover {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             transform: translateY(-3px);
         }
@@ -1214,6 +1647,18 @@
             font-weight: 700;
             margin-bottom: 20px;
             color: var(--text-main);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--accent);
         }
 
         .footer-links {
@@ -1226,10 +1671,14 @@
             color: var(--text-dim);
             font-size: 14px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            padding: 4px 0;
         }
 
-        .footer-link:hover { color: var(--accent); }
+        .footer-link:hover { 
+            color: var(--accent);
+            transform: translateX(5px);
+        }
 
         .contact-item {
             display: flex;
@@ -1240,7 +1689,11 @@
             margin-bottom: 12px;
         }
 
-        .contact-item i { color: var(--accent); }
+        .contact-item i { 
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         .footer-bottom {
             text-align: center;
@@ -1276,7 +1729,12 @@
             opacity: 1;
         }
 
-        .toast i { color: var(--accent); font-size: 18px; }
+        .toast i { 
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 18px; 
+        }
 
         /* ==================== LOADING ==================== */
         .loading {
@@ -1332,868 +1790,1161 @@
     </style>
 </head>
 <body>
+    <!-- HEADER -->
+    <header id="mainHeader">
+        <div class="logo-container" onclick="goHome()">
+            <div class="logo-icon">S</div>
+            <div class="logo-text">SIDS</div>
+        </div>
 
-<!-- HEADER -->
-<header id="mainHeader">
-    <div class="logo-container" onclick="goHome()">
-        <div class="logo-icon">S</div>
-        <div class="logo-text">SIDS</div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="goHome()">Home</div>
+            <div class="nav-item" onclick="switchContentType('movie')">Movies</div>
+            <div class="nav-item" onclick="switchContentType('tv')">TV Shows</div>
+            <div class="nav-item" onclick="switchContentType('anime')">Anime</div>
+            <div class="nav-item" onclick="showPage('genres')">Genres</div>
+            <div class="nav-item" onclick="showPage('favorites')">My List</div>
+        </nav>
+
+        <div class="nav-actions">
+            <div class="search-box">
+                <i class="fas fa-search" onclick="searchContent()"></i>
+                <input type="text" id="searchInput" placeholder="Search movies, TV shows..." onkeyup="handleSearchInput(event)">
+                <div class="search-recommendations" id="searchRecommendations"></div>
+            </div>
+            <div class="icon-btn" onclick="showRandomMovie()" title="Feeling Lucky">
+                <i class="fas fa-dice"></i>
+            </div>
+            <div class="icon-btn" onclick="showPage('favorites')" title="My List">
+                <i class="fas fa-heart"></i>
+                <span class="badge" id="favBadge">0</span>
+            </div>
+            <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE SEARCH MODAL -->
+    <div class="mobile-search-modal" id="mobileSearchModal">
+        <div class="mobile-search-header">
+            <input type="text" class="mobile-search-input" id="mobileSearchInput" placeholder="Search movies, TV shows..." onkeyup="handleMobileSearchInput(event)">
+            <div class="mobile-search-close" onclick="closeMobileSearch()">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="mobile-search-filters">
+            <div class="filter-chip active" data-filter="all" onclick="setMobileFilter(this)">All</div>
+            <div class="filter-chip" data-filter="movie" onclick="setMobileFilter(this)">Movies</div>
+            <div class="filter-chip" data-filter="tv" onclick="setMobileFilter(this)">TV Shows</div>
+            <div class="filter-chip" data-filter="anime" onclick="setMobileFilter(this)">Anime</div>
+        </div>
+        <div class="mobile-search-results" id="mobileSearchResults"></div>
     </div>
 
-    <nav class="nav-menu">
-        <div class="nav-item active" onclick="goHome()">Home</div>
-        <div class="nav-item" onclick="switchContentType('movie')">Movies</div>
-        <div class="nav-item" onclick="switchContentType('tv')">TV Shows</div>
-        <div class="nav-item" onclick="showPage('genres')">Genres</div>
-        <div class="nav-item" onclick="showPage('favorites')">My List</div>
+    <!-- MOVIE INFO OVERLAY -->
+    <div class="movie-info-overlay" id="movieInfoOverlay">
+        <div class="movie-info-box">
+            <div class="close-info" onclick="closeMovieInfo()">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="movie-info-backdrop" id="movieInfoBackdrop"></div>
+            <div class="movie-info-content">
+                <h2 class="movie-info-title" id="movieInfoTitle"></h2>
+                <div class="movie-info-meta" id="movieInfoMeta"></div>
+                <p class="movie-info-desc" id="movieInfoDesc"></p>
+                <div class="movie-info-actions">
+                    <button class="btn btn-primary" onclick="playMovieFromInfo()">
+                        <i class="fas fa-play"></i> Play Now
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleFavoriteFromInfo()">
+                        <i class="fas fa-heart"></i> Add to List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BILLBOARD -->
+    <section class="billboard" id="billboard">
+        <!-- Dynamic slides will be inserted here -->
+    </section>
+
+    <!-- MINI TASKBAR (Mobile) -->
+    <nav class="mini-taskbar">
+        <div class="taskbar-items">
+            <div class="taskbar-item active" onclick="goHome()">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="taskbar-item" onclick="showMobileSearch()">
+                <i class="fas fa-search"></i>
+                <span>Search</span>
+            </div>
+            <div class="taskbar-item" onclick="showRandomMovie()">
+                <i class="fas fa-dice"></i>
+                <span>Lucky</span>
+            </div>
+            <div class="taskbar-item" onclick="showPage('favorites')">
+                <i class="fas fa-heart"></i>
+                <span>My List</span>
+            </div>
+        </div>
     </nav>
 
-    <div class="nav-actions">
-        <div class="search-box">
-            <i class="fas fa-search" onclick="searchContent()"></i>
-            <input type="text" id="searchInput" placeholder="Search movies, TV shows..." onkeyup="if(event.key==='Enter') searchContent()">
-        </div>
-        <div class="icon-btn" onclick="showRandomMovie()" title="Feeling Lucky">
-            <i class="fas fa-dice"></i>
-        </div>
-        <div class="icon-btn" onclick="showPage('favorites')" title="My List">
-            <i class="fas fa-heart"></i>
-            <span class="badge" id="favBadge">0</span>
-        </div>
-    </div>
-</header>
-
-<!-- BILLBOARD -->
-<section class="billboard" id="billboard">
-    <!-- Dynamic slides will be inserted here -->
-</section>
-
-<!-- MINI TASKBAR (Mobile) -->
-<nav class="mini-taskbar">
-    <div class="taskbar-items">
-        <div class="taskbar-item active" onclick="goHome()">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="taskbar-item" onclick="showMobileSearch()">
-            <i class="fas fa-search"></i>
-            <span>Search</span>
-        </div>
-        <div class="taskbar-item" onclick="showRandomMovie()">
-            <i class="fas fa-dice"></i>
-            <span>Lucky</span>
-        </div>
-        <div class="taskbar-item" onclick="showPage('favorites')">
-            <i class="fas fa-heart"></i>
-            <span>My List</span>
-        </div>
-    </div>
-</nav>
-
-<!-- MAIN HOME PAGE -->
-<main id="homePage">
-    <!-- Quick Navigation -->
-    <div class="quick-nav" id="quickNav">
-        <div class="quick-chip active" onclick="loadTrending(this)">
-            <i class="fas fa-fire"></i> Trending
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(28, this)">
-            <i class="fas fa-bomb"></i> Action
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(35, this)">
-            <i class="fas fa-laugh"></i> Comedy
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(27, this)">
-            <i class="fas fa-ghost"></i> Horror
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(878, this)">
-            <i class="fas fa-rocket"></i> Sci-Fi
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(10749, this)">
-            <i class="fas fa-heart"></i> Romance
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(16, this)">
-            <i class="fas fa-dragon"></i> Animation
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(18, this)">
-            <i class="fas fa-theater-masks"></i> Drama
-        </div>
-        <div class="quick-chip" onclick="loadByGenre(53, this)">
-            <i class="fas fa-user-secret"></i> Thriller
-        </div>
-        <div class="quick-chip" onclick="loadTopRated(this)">
-            <i class="fas fa-star"></i> Top Rated
-        </div>
-    </div>
-
-    <!-- Continue Watching -->
-    <section class="section" id="continueSection" style="display: none;">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-history"></i> Continue Watching
-            </h2>
-        </div>
-        <div class="scroll-row" id="continueRow"></div>
-    </section>
-
-    <!-- Top 10 -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-trophy"></i> Top 10 Today
-            </h2>
-        </div>
-        <div class="top10-row" id="top10Row"></div>
-    </section>
-
-    <!-- Main Content Grid -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title" id="gridTitle">
-                <i class="fas fa-fire"></i> Trending Now
-            </h2>
-        </div>
-        <div class="content-grid" id="mainGrid"></div>
-        <div class="loading" id="loadingMore" style="display: none;">
-            <div class="spinner"></div>
-        </div>
-    </section>
-
-    <!-- New Releases -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-sparkles"></i> New Releases
-            </h2>
-            <div class="view-all" onclick="loadByYear(2024)">
-                View All <i class="fas fa-chevron-right"></i>
+    <!-- MAIN HOME PAGE -->
+    <main id="homePage">
+        <!-- Quick Navigation -->
+        <div class="quick-nav" id="quickNav">
+            <div class="quick-chip active" onclick="loadTrending(this)">
+                <i class="fas fa-fire"></i> Trending
             </div>
-        </div>
-        <div class="scroll-row" id="newReleasesRow"></div>
-    </section>
-
-    <!-- Popular Series -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-tv"></i> Popular Series
-            </h2>
-            <div class="view-all" onclick="switchContentType('tv')">
-                View All <i class="fas fa-chevron-right"></i>
+            <div class="quick-chip" onclick="loadByGenre(28, this)">
+                <i class="fas fa-bomb"></i> Action
             </div>
-        </div>
-        <div class="scroll-row" id="seriesRow"></div>
-    </section>
-</main>
-
-<!-- FAVORITES PAGE -->
-<main id="favoritesPage" class="page-container" style="display: none;">
-    <div class="back-btn" onclick="goHome()">
-        <i class="fas fa-arrow-left"></i> Back to Home
-    </div>
-    <div class="page-header">
-        <h1 class="page-title">
-            <i class="fas fa-heart"></i> My List
-            <span style="color: var(--text-dim); font-weight: 500;">(<span id="favTotal">0</span>)</span>
-        </h1>
-    </div>
-    <div class="content-grid" id="favGrid"></div>
-</main>
-
-<!-- GENRES PAGE -->
-<main id="genresPage" class="page-container" style="display: none;">
-    <div class="back-btn" onclick="goHome()">
-        <i class="fas fa-arrow-left"></i> Back to Home
-    </div>
-    <div class="page-header">
-        <h1 class="page-title">
-            <i class="fas fa-film"></i> Browse by Genre
-        </h1>
-    </div>
-    <div class="genre-grid" id="genreGrid"></div>
-</main>
-
-<!-- STREAM PAGE -->
-<main id="streamPage" class="stream-container" style="display: none;">
-    <div class="back-btn" onclick="goHome()">
-        <i class="fas fa-arrow-left"></i> Back to Browse
-    </div>
-
-    <div class="player-container">
-        <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-    </div>
-
-    <div class="server-list">
-        <div class="server-btn active" onclick="switchServer('vidsrc', this)">
-            <i class="fas fa-play-circle"></i> VidSrc
-        </div>
-        <div class="server-btn" onclick="switchServer('vidlink', this)">
-            <i class="fas fa-film"></i> VidLink
-        </div>
-        <div class="server-btn" onclick="switchServer('2embed', this)">
-            <i class="fas fa-server"></i> 2Embed
-        </div>
-        <div class="server-btn" onclick="switchServer('superembed', this)">
-            <i class="fas fa-bolt"></i> SuperEmbed
-        </div>
-        <div class="server-btn" onclick="switchServer('moviesapi', this)">
-            <i class="fas fa-database"></i> MoviesAPI
-        </div>
-    </div>
-
-    <div class="episodes-container" id="episodesContainer" style="display: none;">
-        <h3 style="margin-bottom: 16px; font-weight: 700;">
-            <i class="fas fa-list" style="color: var(--accent);"></i> Episodes
-        </h3>
-        <div class="season-tabs" id="seasonTabs"></div>
-        <div class="episode-grid" id="episodeGrid"></div>
-    </div>
-
-    <div class="content-details" id="contentDetails"></div>
-
-    <section class="section" style="padding: 40px 0;">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-sparkles"></i> You May Also Like
-            </h2>
-        </div>
-        <div class="content-grid" id="recGrid"></div>
-    </section>
-</main>
-
-<!-- FOOTER -->
-<footer>
-    <div class="footer-content">
-        <div class="footer-brand">
-            <div class="logo-text">SIDS</div>
-            <p class="footer-desc">
-                Your ultimate streaming destination. Discover thousands of movies and TV shows in stunning HD quality. 
-                Stream smarter, watch better — only on SIDS.
-            </p>
-            <div class="social-links">
-                <a class="social-link" href="#"><i class="fab fa-twitter"></i></a>
-                <a class="social-link" href="#"><i class="fab fa-instagram"></i></a>
-                <a class="social-link" href="#"><i class="fab fa-discord"></i></a>
-                <a class="social-link" href="#"><i class="fab fa-telegram"></i></a>
+            <div class="quick-chip" onclick="loadByGenre(35, this)">
+                <i class="fas fa-laugh"></i> Comedy
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(27, this)">
+                <i class="fas fa-ghost"></i> Horror
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(878, this)">
+                <i class="fas fa-rocket"></i> Sci-Fi
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(10749, this)">
+                <i class="fas fa-heart"></i> Romance
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(16, this)">
+                <i class="fas fa-dragon"></i> Animation
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(18, this)">
+                <i class="fas fa-theater-masks"></i> Drama
+            </div>
+            <div class="quick-chip" onclick="loadByGenre(53, this)">
+                <i class="fas fa-user-secret"></i> Thriller
+            </div>
+            <div class="quick-chip" onclick="loadTopRated(this)">
+                <i class="fas fa-star"></i> Top Rated
             </div>
         </div>
 
-        <div>
-            <h4 class="footer-title">Browse</h4>
-            <div class="footer-links">
-                <span class="footer-link" onclick="switchContentType('movie')">Movies</span>
-                <span class="footer-link" onclick="switchContentType('tv')">TV Shows</span>
-                <span class="footer-link" onclick="loadTopRated()">Top Rated</span>
-                <span class="footer-link" onclick="loadByYear(2024)">New Releases</span>
+        <!-- Continue Watching -->
+        <section class="section" id="continueSection" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Continue Watching
+                </h2>
+            </div>
+            <div class="scroll-row" id="continueRow"></div>
+        </section>
+
+        <!-- Top 10 -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-trophy"></i> Top 10 Today
+                </h2>
+            </div>
+            <div class="top10-row" id="top10Row"></div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title" id="gridTitle">
+                    <i class="fas fa-fire"></i> Trending Now
+                </h2>
+            </div>
+            <div class="content-grid" id="mainGrid"></div>
+            <div class="loading" id="loadingMore" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <!-- New Releases -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-sparkles"></i> New Releases
+                </h2>
+                <div class="view-all" onclick="loadByYear(2024)">
+                    View All <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="scroll-row" id="newReleasesRow"></div>
+        </section>
+
+        <!-- Popular Series -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-tv"></i> Popular Series
+                </h2>
+                <div class="view-all" onclick="switchContentType('tv')">
+                    View All <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="scroll-row" id="seriesRow"></div>
+        </section>
+    </main>
+
+    <!-- FAVORITES PAGE -->
+    <main id="favoritesPage" class="page-container" style="display: none;">
+        <div class="back-btn" onclick="goHome()">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </div>
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-heart"></i> My List
+                <span style="color: var(--text-dim); font-weight: 500;">(<span id="favTotal">0</span>)</span>
+            </h1>
+        </div>
+        <div class="content-grid" id="favGrid"></div>
+    </main>
+
+    <!-- GENRES PAGE -->
+    <main id="genresPage" class="page-container" style="display: none;">
+        <div class="back-btn" onclick="goHome()">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </div>
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-film"></i> Browse by Genre
+            </h1>
+        </div>
+        <div class="genre-grid" id="genreGrid"></div>
+    </main>
+
+    <!-- STREAM PAGE -->
+    <main id="streamPage" class="stream-container" style="display: none;">
+        <div class="back-btn" onclick="goHome()">
+            <i class="fas fa-arrow-left"></i> Back to Browse
+        </div>
+
+        <div class="player-container">
+            <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+
+        <div class="server-list">
+            <div class="server-btn active" onclick="switchServer('vidsrc', this)">
+                <i class="fas fa-play-circle"></i> VidSrc
+            </div>
+            <div class="server-btn" onclick="switchServer('vidlink', this)">
+                <i class="fas fa-film"></i> VidLink
+            </div>
+            <div class="server-btn" onclick="switchServer('2embed', this)">
+                <i class="fas fa-server"></i> 2Embed
+            </div>
+            <div class="server-btn" onclick="switchServer('superembed', this)">
+                <i class="fas fa-bolt"></i> SuperEmbed
+            </div>
+            <div class="server-btn" onclick="switchServer('moviesapi', this)">
+                <i class="fas fa-database"></i> MoviesAPI
             </div>
         </div>
 
-        <div>
-            <h4 class="footer-title">Genres</h4>
-            <div class="footer-links">
-                <span class="footer-link" onclick="loadByGenre(28)">Action</span>
-                <span class="footer-link" onclick="loadByGenre(35)">Comedy</span>
-                <span class="footer-link" onclick="loadByGenre(27)">Horror</span>
-                <span class="footer-link" onclick="loadByGenre(18)">Drama</span>
+        <div class="episodes-container" id="episodesContainer" style="display: none;">
+            <h3 style="margin-bottom: 16px; font-weight: 700;">
+                <i class="fas fa-list" style="color: var(--accent);"></i> Episodes
+            </h3>
+            <div class="season-tabs" id="seasonTabs"></div>
+            <div class="episode-grid" id="episodeGrid"></div>
+        </div>
+
+        <div class="content-details" id="contentDetails"></div>
+
+        <section class="section" style="padding: 40px 0;">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-sparkles"></i> You May Also Like
+                </h2>
+            </div>
+            <div class="content-grid" id="recGrid"></div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo-text">SIDS</div>
+                <p class="footer-desc">
+                    Your ultimate streaming destination. Discover thousands of movies and TV shows in stunning HD quality. Stream smarter, watch better — only on SIDS.
+                </p>
+                <div class="social-links">
+                    <a class="social-link" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-instagram"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-discord"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Browse</h4>
+                <div class="footer-links">
+                    <span class="footer-link" onclick="switchContentType('movie')">Movies</span>
+                    <span class="footer-link" onclick="switchContentType('tv')">TV Shows</span>
+                    <span class="footer-link" onclick="switchContentType('anime')">Anime</span>
+                    <span class="footer-link" onclick="loadTopRated()">Top Rated</span>
+                    <span class="footer-link" onclick="loadByYear(2024)">New Releases</span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Genres</h4>
+                <div class="footer-links">
+                    <span class="footer-link" onclick="loadByGenre(28)">Action</span>
+                    <span class="footer-link" onclick="loadByGenre(35)">Comedy</span>
+                    <span class="footer-link" onclick="loadByGenre(27)">Horror</span>
+                    <span class="footer-link" onclick="loadByGenre(18)">Drama</span>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Contact Us</h4>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>siduncl80@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <span>24/7 Support</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-globe"></i>
+                    <span>Available Worldwide</span>
+                </div>
             </div>
         </div>
 
-        <div>
-            <h4 class="footer-title">Contact Us</h4>
-            <div class="contact-item">
-                <i class="fas fa-envelope"></i>
-                <span>siduncl80@gmail.com</span>
-            </div>
-            <div class="contact-item">
-                <i class="fas fa-clock"></i>
-                <span>24/7 Support</span>
-            </div>
-            <div class="contact-item">
-                <i class="fas fa-globe"></i>
-                <span>Available Worldwide</span>
-            </div>
+        <div class="footer-bottom">
+            <p>© 2024 SIDS. All rights reserved. This site does not store any files on its server.</p>
+            <p style="margin-top: 8px;">Made with  ❤️ for movie lovers everywhere.</p>
         </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Success!</span>
     </div>
 
-    <div class="footer-bottom">
-        <p>© 2024 SIDS. All rights reserved. This site does not store any files on its server.</p>
-        <p style="margin-top: 8px;">Made with ❤️ for movie lovers everywhere.</p>
-    </div>
-</footer>
+    <script>
+        const API_KEY = atob("MDc1YWJiMzFlNTQ1OWUxNTljN2E3YTkzMjgzNDUyNDE=");
+        let curPage = 1, curPath = 'trending/movie/week', curId = null, currentTitle = '';
+        let contentType = 'movie';
+        let currentSeason = 1, currentEpisode = 1;
+        let favorites = JSON.parse(localStorage.getItem('sids_favs') || '[]');
+        let billboardItems = [], billboardIdx = 0, billboardTimer;
+        let isLoading = false;
+        let currentServer = 'vidsrc';
+        let currentInfoItem = null; // For movie info overlay
+        let mobileFilter = 'all'; // For mobile search filter
 
-<!-- TOAST -->
-<div id="toast" class="toast">
-    <i class="fas fa-check-circle"></i>
-    <span id="toastMessage">Success!</span>
-</div>
+        const genres = [
+            { id: 28, name: 'Action', icon: 'bomb' },
+            { id: 35, name: 'Comedy', icon: 'laugh' },
+            { id: 27, name: 'Horror', icon: 'ghost' },
+            { id: 878, name: 'Sci-Fi', icon: 'rocket' },
+            { id: 10749, name: 'Romance', icon: 'heart' },
+            { id: 16, name: 'Animation', icon: 'dragon' },
+            { id: 18, name: 'Drama', icon: 'theater-masks' },
+            { id: 53, name: 'Thriller', icon: 'user-secret' },
+            { id: 80, name: 'Crime', icon: 'mask' },
+            { id: 99, name: 'Documentary', icon: 'file-video' },
+            { id: 10751, name: 'Family', icon: 'users' },
+            { id: 14, name: 'Fantasy', icon: 'hat-wizard' }
+        ];
 
-<script>
-    const API_KEY = atob("MDc1YWJiMzFlNTQ1OWUxNTljN2E3YTkzMjgzNDUyNDE=");
-    
-    let curPage = 1, curPath = 'trending/movie/week', curId = null, currentTitle = '';
-    let contentType = 'movie';
-    let currentSeason = 1, currentEpisode = 1;
-    let favorites = JSON.parse(localStorage.getItem('sids_favs') || '[]');
-    let billboardItems = [], billboardIdx = 0, billboardTimer;
-    let isLoading = false;
-    let currentServer = 'vidsrc';
+        // Initialize
+        window.onload = async () => {
+            // Check for theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').className = 'fas fa-sun';
+            }
 
-    const genres = [
-        { id: 28, name: 'Action', icon: 'bomb' },
-        { id: 35, name: 'Comedy', icon: 'laugh' },
-        { id: 27, name: 'Horror', icon: 'ghost' },
-        { id: 878, name: 'Sci-Fi', icon: 'rocket' },
-        { id: 10749, name: 'Romance', icon: 'heart' },
-        { id: 16, name: 'Animation', icon: 'dragon' },
-        { id: 18, name: 'Drama', icon: 'theater-masks' },
-        { id: 53, name: 'Thriller', icon: 'user-secret' },
-        { id: 80, name: 'Crime', icon: 'mask' },
-        { id: 99, name: 'Documentary', icon: 'file-video' },
-        { id: 10751, name: 'Family', icon: 'users' },
-        { id: 14, name: 'Fantasy', icon: 'hat-wizard' }
-    ];
+            const urlParams = new URLSearchParams(window.location.search);
+            const watchParam = urlParams.get('watch');
+            if (watchParam) {
+                const [type, id] = watchParam.split('-');
+                contentType = type;
+                await openContent(parseInt(id));
+            } else {
+                await loadHomePage();
+            }
+            updateFavCount();
+            setupScrollListener();
+            renderGenreGrid();
+        };
 
-    // Initialize
-    window.onload = async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const watchParam = urlParams.get('watch');
-
-        if (watchParam) {
-            const [type, id] = watchParam.split('-');
-            contentType = type;
-            await openContent(parseInt(id));
-        } else {
-            await loadHomePage();
+        async function loadHomePage() {
+            await loadTrending();
+            await loadTop10();
+            await loadNewReleases();
+            await loadPopularSeries();
+            loadContinueWatching();
         }
 
-        updateFavCount();
-        setupScrollListener();
-        renderGenreGrid();
-    };
-
-    async function loadHomePage() {
-        await loadTrending();
-        await loadTop10();
-        await loadNewReleases();
-        await loadPopularSeries();
-        loadContinueWatching();
-    }
-
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
-        const header = document.getElementById('mainHeader');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-
-    function setupScrollListener() {
+        // Header scroll effect
         window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !isLoading) {
-                loadMore();
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
             }
         });
-    }
 
-    function showToast(message) {
-        const toast = document.getElementById('toast');
-        document.getElementById('toastMessage').textContent = message;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    function goHome() {
-        showPage('home');
-        window.history.pushState({}, '', window.location.pathname);
-    }
-
-    function showPage(page) {
-        document.getElementById('homePage').style.display = page === 'home' ? 'block' : 'none';
-        document.getElementById('favoritesPage').style.display = page === 'favorites' ? 'block' : 'none';
-        document.getElementById('genresPage').style.display = page === 'genres' ? 'block' : 'none';
-        document.getElementById('streamPage').style.display = page === 'stream' ? 'block' : 'none';
-        document.getElementById('billboard').style.display = page === 'home' ? 'block' : 'none';
-        document.getElementById('quickNav').style.display = page === 'home' ? 'flex' : 'none';
-
-        if (page === 'favorites') {
-            renderGrid('favGrid', favorites);
+        function setupScrollListener() {
+            window.addEventListener('scroll', () => {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !isLoading) {
+                    loadMore();
+                }
+            });
         }
 
-        window.scrollTo(0, 0);
-    }
-
-    async function fetchData(path, page = 1) {
-        try {
-            const connector = path.includes('?') ? '&' : '?';
-            const r = await fetch(`https://api.themoviedb.org/3/${path}${connector}api_key=${API_KEY}&page=${page}`);
-            const d = await r.json();
-            return d.results || [];
-        } catch (e) {
-            showToast('Connection error. Please try again.');
-            return [];
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
-    }
 
-    async function loadTrending(btn) {
-        if (btn) highlightQuickChip(btn);
-        curPage = 1;
-        curPath = `trending/${contentType}/week`;
-        const items = await fetchData(curPath, curPage);
-        billboardItems = items.slice(0, 5);
-        startBillboard();
-        renderGrid('mainGrid', items);
-        document.getElementById('gridTitle').innerHTML = '<i class="fas fa-fire"></i> Trending Now';
-        showPage('home');
-    }
-
-    async function loadTop10() {
-        const items = await fetchData(`${contentType}/popular`, 1);
-        renderTop10(items.slice(0, 10));
-    }
-
-    async function loadNewReleases() {
-        const yearParam = contentType === 'movie' ? 'primary_release_year' : 'first_air_date_year';
-        const items = await fetchData(`discover/${contentType}?${yearParam}=2024&sort_by=popularity.desc`, 1);
-        renderScrollRow('newReleasesRow', items.slice(0, 15));
-    }
-
-    async function loadPopularSeries() {
-        const items = await fetchData('trending/tv/week', 1);
-        renderScrollRow('seriesRow', items.slice(0, 15), 'tv');
-    }
-
-    function loadContinueWatching() {
-        const watched = JSON.parse(localStorage.getItem('sids_watched') || '[]');
-        if (watched.length > 0) {
-            document.getElementById('continueSection').style.display = 'block';
-            renderContinueRow(watched);
+        function goHome() {
+            showPage('home');
+            window.history.pushState({}, '', window.location.pathname);
         }
-    }
 
-    async function loadByGenre(id, btn) {
-        if (btn) highlightQuickChip(btn);
-        curPath = `discover/${contentType}?with_genres=${id}&sort_by=popularity.desc`;
-        const items = await fetchData(curPath, 1);
-        const genreName = genres.find(g => g.id === id)?.name || 'Genre';
-        document.getElementById('gridTitle').innerHTML = `<i class="fas fa-film"></i> ${genreName}`;
-        renderGrid('mainGrid', items);
-        scrollToGrid();
-    }
-
-    async function loadTopRated(btn) {
-        if (btn) highlightQuickChip(btn);
-        curPath = `${contentType}/top_rated`;
-        const items = await fetchData(curPath, 1);
-        document.getElementById('gridTitle').innerHTML = '<i class="fas fa-star"></i> Top Rated';
-        renderGrid('mainGrid', items);
-        scrollToGrid();
-    }
-
-    async function loadByYear(year) {
-        const yearParam = contentType === 'movie' ? 'primary_release_year' : 'first_air_date_year';
-        curPath = `discover/${contentType}?${yearParam}=${year}&sort_by=popularity.desc`;
-        const items = await fetchData(curPath, 1);
-        document.getElementById('gridTitle').innerHTML = `<i class="fas fa-calendar"></i> ${year} Releases`;
-        renderGrid('mainGrid', items);
-        scrollToGrid();
-    }
-
-    async function loadMore() {
-        if (curPath.includes('search') || curPath.includes('recommendations')) return;
-        isLoading = true;
-        document.getElementById('loadingMore').style.display = 'flex';
-        curPage++;
-        const items = await fetchData(curPath, curPage);
-        renderGrid('mainGrid', items, true);
-        isLoading = false;
-        document.getElementById('loadingMore').style.display = 'none';
-    }
-
-    async function searchContent() {
-        const query = document.getElementById('searchInput').value.trim();
-        if (!query) return;
-
-        curPath = `search/${contentType}?query=${encodeURIComponent(query)}`;
-        const items = await fetchData(curPath, 1);
-        document.getElementById('gridTitle').innerHTML = `<i class="fas fa-search"></i> Results for "${query}"`;
-        renderGrid('mainGrid', items);
-        showPage('home');
-        scrollToGrid();
-
-        if (items.length > 0) {
-            showToast(`Found ${items.length} results!`);
-        } else {
-            showToast('No results found.');
+        function showPage(page) {
+            document.getElementById('homePage').style.display = page === 'home' ? 'block' : 'none';
+            document.getElementById('favoritesPage').style.display = page === 'favorites' ? 'block' : 'none';
+            document.getElementById('genresPage').style.display = page === 'genres' ? 'block' : 'none';
+            document.getElementById('streamPage').style.display = page === 'stream' ? 'block' : 'none';
+            document.getElementById('billboard').style.display = page === 'home' ? 'block' : 'none';
+            document.getElementById('quickNav').style.display = page === 'home' ? 'flex' : 'none';
+            if (page === 'favorites') {
+                renderGrid('favGrid', favorites);
+            }
+            window.scrollTo(0, 0);
         }
-    }
 
-    function showMobileSearch() {
-        const query = prompt('Search movies & TV shows:');
-        if (query) {
-            document.getElementById('searchInput').value = query;
-            searchContent();
+        async function fetchData(path, page = 1) {
+            try {
+                const connector = path.includes('?') ? '&' : '?';
+                const r = await fetch(`https://api.themoviedb.org/3/${path}${connector}api_key=${API_KEY}&page=${page}`);
+                const d = await r.json();
+                return d.results || [];
+            } catch (e) {
+                showToast('Connection error. Please try again.');
+                return [];
+            }
         }
-    }
 
-    function switchContentType(type) {
-        contentType = type;
-        loadTrending();
-        showToast(`Switched to ${type === 'movie' ? 'Movies' : 'TV Shows'}`);
-    }
-
-    async function showRandomMovie() {
-        const randomPage = Math.floor(Math.random() * 50) + 1;
-        const path = contentType === 'movie' ? 'movie/popular' : 'tv/popular';
-        const items = await fetchData(path, randomPage);
-        if (items.length > 0) {
-            const randomItem = items[Math.floor(Math.random() * items.length)];
-            openContent(randomItem.id);
-            showToast('🎲 Lucky pick!');
+        async function loadTrending(btn) {
+            if (btn) highlightQuickChip(btn);
+            curPage = 1;
+            curPath = `trending/${contentType}/week`;
+            const items = await fetchData(curPath, curPage);
+            billboardItems = items.slice(0, 5);
+            startBillboard();
+            renderGrid('mainGrid', items);
+            document.getElementById('gridTitle').innerHTML = '<i class="fas fa-fire"></i> Trending Now';
+            showPage('home');
         }
-    }
 
-    // Billboard
-    function startBillboard() {
-        clearInterval(billboardTimer);
-        renderBillboard();
-        billboardTimer = setInterval(() => {
-            billboardIdx = (billboardIdx + 1) % billboardItems.length;
-            renderBillboard();
-        }, 8000);
-    }
+        async function loadTop10() {
+            const items = await fetchData(`${contentType}/popular`, 1);
+            renderTop10(items.slice(0, 10));
+        }
 
-    function renderBillboard() {
-        const container = document.getElementById('billboard');
-        if (!billboardItems.length) return;
+        async function loadNewReleases() {
+            const yearParam = contentType === 'movie' ? 'primary_release_year' : 'first_air_date_year';
+            const items = await fetchData(`discover/${contentType}?${yearParam}=2024&sort_by=popularity.desc`, 1);
+            renderScrollRow('newReleasesRow', items.slice(0, 15));
+        }
 
-        container.innerHTML = billboardItems.map((item, idx) => {
-            const isActive = idx === billboardIdx;
+        async function loadPopularSeries() {
+            const items = await fetchData('trending/tv/week', 1);
+            renderScrollRow('seriesRow', items.slice(0, 15), 'tv');
+        }
+
+        function loadContinueWatching() {
+            const watched = JSON.parse(localStorage.getItem('sids_watched') || '[]');
+            if (watched.length > 0) {
+                document.getElementById('continueSection').style.display = 'block';
+                renderContinueRow(watched);
+            }
+        }
+
+        async function loadByGenre(id, btn) {
+            if (btn) highlightQuickChip(btn);
+            curPath = `discover/${contentType}?with_genres=${id}&sort_by=popularity.desc`;
+            const items = await fetchData(curPath, 1);
+            const genreName = genres.find(g => g.id === id)?.name || 'Genre';
+            document.getElementById('gridTitle').innerHTML = `<i class="fas fa-film"></i> ${genreName}`;
+            renderGrid('mainGrid', items);
+            scrollToGrid();
+        }
+
+        async function loadTopRated(btn) {
+            if (btn) highlightQuickChip(btn);
+            curPath = `${contentType}/top_rated`;
+            const items = await fetchData(curPath, 1);
+            document.getElementById('gridTitle').innerHTML = '<i class="fas fa-star"></i> Top Rated';
+            renderGrid('mainGrid', items);
+            scrollToGrid();
+        }
+
+        async function loadByYear(year) {
+            const yearParam = contentType === 'movie' ? 'primary_release_year' : 'first_air_date_year';
+            curPath = `discover/${contentType}?${yearParam}=${year}&sort_by=popularity.desc`;
+            const items = await fetchData(curPath, 1);
+            document.getElementById('gridTitle').innerHTML = `<i class="fas fa-calendar"></i> ${year} Releases`;
+            renderGrid('mainGrid', items);
+            scrollToGrid();
+        }
+
+        async function loadMore() {
+            if (curPath.includes('search') || curPath.includes('recommendations')) return;
+            isLoading = true;
+            document.getElementById('loadingMore').style.display = 'flex';
+            curPage++;
+            const items = await fetchData(curPath, curPage);
+            renderGrid('mainGrid', items, true);
+            isLoading = false;
+            document.getElementById('loadingMore').style.display = 'none';
+        }
+
+        // Enhanced Search with Recommendations
+        function handleSearchInput(event) {
+            const query = event.target.value.trim();
+            const recommendationsContainer = document.getElementById('searchRecommendations');
+            
+            if (event.key === 'Enter') {
+                searchContent();
+                recommendationsContainer.style.display = 'none';
+                return;
+            }
+            
+            if (query.length < 2) {
+                recommendationsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Debounce to avoid too many API calls
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(() => {
+                fetchRecommendations(query);
+            }, 300);
+        }
+
+        async function fetchRecommendations(query) {
+            const recommendationsContainer = document.getElementById('searchRecommendations');
+            recommendationsContainer.innerHTML = '<div class="recommendation-item"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            recommendationsContainer.style.display = 'block';
+            
+            try {
+                const results = await fetchData(`search/multi?query=${encodeURIComponent(query)}`, 1);
+                if (results.length === 0) {
+                    recommendationsContainer.innerHTML = '<div class="recommendation-item">No results found</div>';
+                    return;
+                }
+                
+                const limitedResults = results.slice(0, 5);
+                const html = limitedResults.map(item => {
+                    const title = item.title || item.name;
+                    const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                    const type = item.media_type || (item.first_air_date ? 'tv' : 'movie');
+                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/40x60?text=No+Image';
+                    
+                    return `
+                        <div class="recommendation-item" onclick="selectRecommendation(${item.id}, '${type}')">
+                            <img src="${poster}" alt="${title}">
+                            <div class="recommendation-info">
+                                <div class="recommendation-title">${title}</div>
+                                <div class="recommendation-meta">${year} • ${type === 'tv' ? 'TV Show' : 'Movie'}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                recommendationsContainer.innerHTML = html;
+            } catch (e) {
+                recommendationsContainer.innerHTML = '<div class="recommendation-item">Error loading recommendations</div>';
+            }
+        }
+
+        function selectRecommendation(id, type) {
+            contentType = type;
+            openContent(id);
+            document.getElementById('searchRecommendations').style.display = 'none';
+            document.getElementById('searchInput').value = '';
+        }
+
+        async function searchContent() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            curPath = `search/${contentType}?query=${encodeURIComponent(query)}`;
+            const items = await fetchData(curPath, 1);
+            document.getElementById('gridTitle').innerHTML = `<i class="fas fa-search"></i> Results for "${query}"`;
+            renderGrid('mainGrid', items);
+            showPage('home');
+            scrollToGrid();
+            
+            if (items.length > 0) {
+                showToast(`Found ${items.length} results!`);
+            } else {
+                showToast('No results found.');
+            }
+            
+            // Hide recommendations
+            document.getElementById('searchRecommendations').style.display = 'none';
+        }
+
+        // Mobile Search Functions
+        function showMobileSearch() {
+            document.getElementById('mobileSearchModal').style.display = 'flex';
+            document.getElementById('mobileSearchInput').focus();
+        }
+
+        function closeMobileSearch() {
+            document.getElementById('mobileSearchModal').style.display = 'none';
+            document.getElementById('mobileSearchResults').innerHTML = '';
+            document.getElementById('mobileSearchInput').value = '';
+        }
+
+        function setMobileFilter(chip) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            mobileFilter = chip.dataset.filter;
+            
+            // Trigger search if there's already a query
+            const query = document.getElementById('mobileSearchInput').value.trim();
+            if (query.length >= 2) {
+                performMobileSearch(query);
+            }
+        }
+
+        function handleMobileSearchInput(event) {
+            const query = event.target.value.trim();
+            
+            if (event.key === 'Enter') {
+                performMobileSearch(query);
+                return;
+            }
+            
+            if (query.length < 2) {
+                document.getElementById('mobileSearchResults').innerHTML = '';
+                return;
+            }
+            
+            // Debounce
+            clearTimeout(window.mobileSearchTimeout);
+            window.mobileSearchTimeout = setTimeout(() => {
+                performMobileSearch(query);
+            }, 300);
+        }
+
+        async function performMobileSearch(query) {
+            const resultsContainer = document.getElementById('mobileSearchResults');
+            resultsContainer.innerHTML = '<div class="recommendation-item"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            
+            let searchPath = `search/multi?query=${encodeURIComponent(query)}`;
+            
+            // Apply filters
+            if (mobileFilter === 'movie') {
+                searchPath = `search/movie?query=${encodeURIComponent(query)}`;
+            } else if (mobileFilter === 'tv') {
+                searchPath = `search/tv?query=${encodeURIComponent(query)}`;
+            } else if (mobileFilter === 'anime') {
+                searchPath = `discover/tv?with_genres=16&query=${encodeURIComponent(query)}`;
+            }
+            
+            try {
+                const results = await fetchData(searchPath, 1);
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<div class="recommendation-item">No results found</div>';
+                    return;
+                }
+                
+                const html = results.slice(0, 10).map(item => {
+                    const title = item.title || item.name;
+                    const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                    const type = item.media_type || (item.first_air_date ? 'tv' : 'movie');
+                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/40x60?text=No+Image';
+                    
+                    return `
+                        <div class="recommendation-item" onclick="selectMobileRecommendation(${item.id}, '${type}')">
+                            <img src="${poster}" alt="${title}">
+                            <div class="recommendation-info">
+                                <div class="recommendation-title">${title}</div>
+                                <div class="recommendation-meta">${year} • ${type === 'tv' ? 'TV Show' : 'Movie'}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                resultsContainer.innerHTML = html;
+            } catch (e) {
+                resultsContainer.innerHTML = '<div class="recommendation-item">Error loading results</div>';
+            }
+        }
+
+        function selectMobileRecommendation(id, type) {
+            contentType = type;
+            openContent(id);
+            closeMobileSearch();
+        }
+
+        // Movie Info Overlay
+        function showMovieInfo(item, type) {
+            currentInfoItem = { ...item, type };
+            const backdrop = document.getElementById('movieInfoBackdrop');
+            const title = document.getElementById('movieInfoTitle');
+            const meta = document.getElementById('movieInfoMeta');
+            const desc = document.getElementById('movieInfoDesc');
+            
             const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+            
+            backdrop.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${item.backdrop_path || item.poster_path}')`;
+            title.textContent = item.title || item.name;
+            
+            meta.innerHTML = `
+                <span class="rating"><i class="fas fa-star"></i> ${rating}</span>
+                <span><i class="fas fa-calendar"></i> ${year}</span>
+                <span><i class="fas fa-tag"></i> ${type === 'tv' ? 'TV Show' : 'Movie'}</span>
+            `;
+            
+            desc.textContent = item.overview || 'No description available.';
+            
+            document.getElementById('movieInfoOverlay').style.display = 'flex';
+        }
+
+        function closeMovieInfo() {
+            document.getElementById('movieInfoOverlay').style.display = 'none';
+            currentInfoItem = null;
+        }
+
+        function playMovieFromInfo() {
+            if (currentInfoItem) {
+                contentType = currentInfoItem.type;
+                openContent(currentInfoItem.id);
+                closeMovieInfo();
+            }
+        }
+
+        function toggleFavoriteFromInfo() {
+            if (currentInfoItem) {
+                const { id, title, poster_path, vote_average, release_date, type } = currentInfoItem;
+                toggleFavorite(id, title || currentInfoItem.name, poster_path, vote_average, release_date, type);
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (isLight) {
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function switchContentType(type) {
+            if (type === 'anime') {
+                // Anime is typically TV shows with animation genre
+                contentType = 'tv';
+                loadByGenre(16); // Animation genre
+                showToast('Loading Anime...');
+            } else {
+                contentType = type;
+                loadTrending();
+                showToast(`Switched to ${type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'Anime'}`);
+            }
+        }
+
+        async function showRandomMovie() {
+            const randomPage = Math.floor(Math.random() * 50) + 1;
+            const path = contentType === 'movie' ? 'movie/popular' : 'tv/popular';
+            const items = await fetchData(path, randomPage);
+            if (items.length > 0) {
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                openContent(randomItem.id);
+                showToast('🎲 Lucky pick!');
+            }
+        }
+
+        // Billboard function
+        function startBillboard() {
+            clearInterval(billboardTimer);
+            renderBillboard();
+            billboardTimer = setInterval(() => {
+                billboardIdx = (billboardIdx + 1) % billboardItems.length;
+                renderBillboard();
+            }, 8000);
+        }
+
+        function renderBillboard() {
+            const container = document.getElementById('billboard');
+            if (!billboardItems.length) return;
+            
+            container.innerHTML = billboardItems.map((item, idx) => {
+                const isActive = idx === billboardIdx;
+                const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                return `
+                    <div class="billboard-slide ${isActive ? 'active' : ''}">
+                        <div class="billboard-bg" style="background-image: url('https://image.tmdb.org/t/p/original${item.backdrop_path}')"></div>
+                        <div class="billboard-overlay"></div>
+                        <div class="billboard-content">
+                            <div class="billboard-badge">
+                                <i class="fas fa-fire"></i> #${idx + 1} Trending
+                            </div>
+                            <h1 class="billboard-title">${item.title || item.name}</h1>
+                            <div class="billboard-meta">
+                                <span class="meta-item rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
+                                <span class="meta-item"><i class="fas fa-calendar"></i> ${year}</span>
+                                <span class="meta-item quality">HD</span>
+                            </div>
+                            <p class="billboard-desc">${item.overview}</p>
+                            <div class="billboard-actions">
+                                <button class="btn btn-primary" onclick="openContent(${item.id})">
+                                    <i class="fas fa-play"></i> Watch Now
+                                </button>
+                                <button class="btn btn-secondary" onclick="toggleFavorite(${item.id}, '${(item.title || item.name).replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}', '${contentType}')">
+                                    <i class="fas fa-plus"></i> My List
+                                </button>
+                                <button class="btn btn-premium" onclick="showMovieInfo(${JSON.stringify(item).replace(/'/g, "\\'")}, '${contentType}')">
+                                    <i class="fas fa-info-circle"></i> Info
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add indicators
+            const indicators = billboardItems.map((_, idx) => 
+                `<div class="indicator ${idx === billboardIdx ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`
+            ).join('');
+            
+            container.innerHTML += `<div class="billboard-indicators">${indicators}</div>`;
+        }
+
+        function goToSlide(idx) {
+            billboardIdx = idx;
+            clearInterval(billboardTimer);
+            renderBillboard();
+            billboardTimer = setInterval(() => {
+                billboardIdx = (billboardIdx + 1) % billboardItems.length;
+                renderBillboard();
+            }, 8000);
+        }
+
+        // Render functions
+        function renderGrid(target, items, append = false) {
+            const container = document.getElementById(target);
+            if (!items || items.length === 0) {
+                if (!append) container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">No content found.</p>';
+                return;
+            }
+            const html = items.map(item => createMovieCard(item)).join('');
+            if (append) container.innerHTML += html;
+            else container.innerHTML = html;
+        }
+
+        function renderScrollRow(target, items, forceType = null) {
+            const container = document.getElementById(target);
+            if (!items) return;
+            container.innerHTML = items.map(item => createMovieCard(item, forceType)).join('');
+        }
+
+        function renderTop10(items) {
+            const container = document.getElementById('top10Row');
+            container.innerHTML = items.map((item, idx) => `
+                <div class="top10-card" onclick="openContent(${item.id})">
+                    <span class="top10-number">${idx + 1}</span>
+                    <div class="top10-poster">
+                        <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${item.title || item.name}" loading="lazy">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderContinueRow(items) {
+            const container = document.getElementById('continueRow');
+            container.innerHTML = items.map(item => `
+                <div class="continue-card" onclick="contentType='${item.type || 'movie'}'; openContent(${item.id})">
+                    <div class="continue-backdrop">
+                        <img src="https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}" alt="${item.title}" loading="lazy">
+                        <div class="continue-overlay"></div>
+                        <div class="continue-play"><i class="fas fa-play"></i></div>
+                    </div>
+                    <div class="continue-info">
+                        <div class="continue-title">${item.title}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.random() * 60 + 20}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderGenreGrid() {
+            const container = document.getElementById('genreGrid');
+            container.innerHTML = genres.map(genre => `
+                <div class="genre-card" onclick="loadByGenre(${genre.id})">
+                    <div class="genre-overlay">
+                        <span class="genre-name"><i class="fas fa-${genre.icon}"></i> ${genre.name}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createMovieCard(item, forceType = null) {
+            if (!item.poster_path) return '';
+            const isFav = favorites.some(f => f.id === item.id);
+            const year = (item.release_date || item.first_air_date || '').split('-')[0] || '';
+            const title = item.title || item.name;
+            const type = forceType || (item.first_air_date !== undefined ? 'tv' : 'movie');
+            const isNew = new Date(item.release_date || item.first_air_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            
             return `
-                <div class="billboard-slide ${isActive ? 'active' : ''}">
-                    <div class="billboard-bg" style="background-image: url('https://image.tmdb.org/t/p/original${item.backdrop_path}')"></div>
-                    <div class="billboard-overlay"></div>
-                    <div class="billboard-content">
-                        <div class="billboard-badge">
-                            <i class="fas fa-fire"></i> #${idx + 1} Trending
+                <div class="movie-card" onclick="contentType='${type}'; openContent(${item.id})">
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}" loading="lazy">
+                        <div class="poster-overlay">
+                            <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
-                        <h1 class="billboard-title">${item.title || item.name}</h1>
-                        <div class="billboard-meta">
-                            <span class="meta-item rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
-                            <span class="meta-item"><i class="fas fa-calendar"></i> ${year}</span>
-                            <span class="meta-item quality">HD</span>
+                        <div class="card-badges">
+                            <span class="badge badge-rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
+                            ${isNew ? '<span class="badge badge-new">NEW</span>' : '<span class="badge badge-quality">HD</span>'}
+                            ${item.vote_average > 7.5 ? '<span class="badge badge-premium">PREMIUM</span>' : ''}
                         </div>
-                        <p class="billboard-desc">${item.overview}</p>
-                        <div class="billboard-actions">
-                            <button class="btn btn-primary" onclick="openContent(${item.id})">
-                                <i class="fas fa-play"></i> Watch Now
+                        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${item.id}, '${title.replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}', '${type}')">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">${title}</div>
+                        <div class="card-meta">
+                            <span><i class="fas fa-calendar"></i> ${year}</span>
+                            <span>${type === 'tv' ? 'TV' : type === 'anime' ? 'Anime' : 'Movie'}</span>
+                        </div>
+                    </div>
+                    <div class="poster-overlay" style="opacity: 0; background: rgba(0,0,0,0.7); align-items: flex-end; padding: 15px;" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity=0">
+                        <div style="width: 100%;">
+                            <div style="font-weight: 700; margin-bottom: 8px;">${title}</div>
+                            <div style="font-size: 12px; color: #ccc; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.overview || ''}</div>
+                            <button class="btn btn-primary" style="width: 100%; padding: 8px;" onclick="event.stopPropagation(); contentType='${type}'; openContent(${item.id})">
+                                <i class="fas fa-play"></i> Play Now
                             </button>
-                            <button class="btn btn-secondary" onclick="toggleFavorite(${item.id}, '${(item.title || item.name).replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}')">
-                                <i class="fas fa-plus"></i> My List
+                            <button class="btn btn-premium" style="width: 100%; padding: 8px; margin-top: 8px;" onclick="event.stopPropagation(); showMovieInfo(${JSON.stringify(item).replace(/'/g, "\\'")}, '${type}')">
+                                <i class="fas fa-info-circle"></i> More Info
                             </button>
                         </div>
                     </div>
                 </div>
             `;
-        }).join('');
-
-        // Add indicators
-        const indicators = billboardItems.map((_, idx) => 
-            `<div class="indicator ${idx === billboardIdx ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`
-        ).join('');
-        container.innerHTML += `<div class="billboard-indicators">${indicators}</div>`;
-    }
-
-    function goToSlide(idx) {
-        billboardIdx = idx;
-        clearInterval(billboardTimer);
-        renderBillboard();
-        billboardTimer = setInterval(() => {
-            billboardIdx = (billboardIdx + 1) % billboardItems.length;
-            renderBillboard();
-        }, 8000);
-    }
-
-    // Render functions
-    function renderGrid(target, items, append = false) {
-        const container = document.getElementById(target);
-        if (!items || items.length === 0) {
-            if (!append) container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">No content found.</p>';
-            return;
         }
 
-        const html = items.map(item => createMovieCard(item)).join('');
-        if (append) container.innerHTML += html;
-        else container.innerHTML = html;
-    }
-
-    function renderScrollRow(target, items, forceType = null) {
-        const container = document.getElementById(target);
-        if (!items) return;
-        container.innerHTML = items.map(item => createMovieCard(item, forceType)).join('');
-    }
-
-    function renderTop10(items) {
-        const container = document.getElementById('top10Row');
-        container.innerHTML = items.map((item, idx) => `
-            <div class="top10-card" onclick="openContent(${item.id})">
-                <span class="top10-number">${idx + 1}</span>
-                <div class="top10-poster">
-                    <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${item.title || item.name}" loading="lazy">
+        // Stream functionality
+        async function openContent(id) {
+            curId = id;
+            const endpoint = contentType === 'movie' ? `movie/${id}` : `tv/${id}`;
+            const item = await fetch(`https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}`).then(r => r.json());
+            currentTitle = item.title || item.name;
+            const recs = await fetchData(`${contentType}/${id}/recommendations`);
+            window.history.pushState({}, '', `?watch=${contentType}-${id}`);
+            
+            if (contentType === 'tv') {
+                loadSeasons(item);
+                document.getElementById('episodesContainer').style.display = 'block';
+                currentSeason = 1;
+                currentEpisode = 1;
+                loadEpisode(1, 1);
+            } else {
+                document.getElementById('episodesContainer').style.display = 'none';
+                loadMoviePlayer(id);
+            }
+            
+            saveWatched(id, currentTitle, item.poster_path, item.backdrop_path, item.vote_average, item.release_date || item.first_air_date);
+            
+            const genresList = item.genres ? item.genres.map(g => g.name) : [];
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            const runtime = contentType === 'movie' ? `${item.runtime} min` : `${item.number_of_seasons} Seasons`;
+            
+            document.getElementById('contentDetails').innerHTML = `
+                <div class="detail-poster">
+                    <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${currentTitle}">
                 </div>
-            </div>
-        `).join('');
-    }
-
-    function renderContinueRow(items) {
-        const container = document.getElementById('continueRow');
-        container.innerHTML = items.map(item => `
-            <div class="continue-card" onclick="contentType='${item.type || 'movie'}'; openContent(${item.id})">
-                <div class="continue-backdrop">
-                    <img src="https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}" alt="${item.title}" loading="lazy">
-                    <div class="continue-overlay"></div>
-                    <div class="continue-play"><i class="fas fa-play"></i></div>
-                </div>
-                <div class="continue-info">
-                    <div class="continue-title">${item.title}</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${Math.random() * 60 + 20}%"></div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderGenreGrid() {
-        const container = document.getElementById('genreGrid');
-        container.innerHTML = genres.map(genre => `
-            <div class="genre-card" onclick="loadByGenre(${genre.id})">
-                <div class="genre-overlay">
-                    <span class="genre-name"><i class="fas fa-${genre.icon}"></i> ${genre.name}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function createMovieCard(item, forceType = null) {
-        if (!item.poster_path) return '';
-        const isFav = favorites.some(f => f.id === item.id);
-        const year = (item.release_date || item.first_air_date || '').split('-')[0] || '';
-        const title = item.title || item.name;
-        const type = forceType || (item.first_air_date !== undefined ? 'tv' : 'movie');
-        const isNew = new Date(item.release_date || item.first_air_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-        return `
-            <div class="movie-card" onclick="contentType='${type}'; openContent(${item.id})">
-                <div class="poster">
-                    <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}" loading="lazy">
-                    <div class="poster-overlay">
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="card-badges">
-                        <span class="badge badge-rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
-                        ${isNew ? '<span class="badge badge-new">NEW</span>' : '<span class="badge badge-quality">HD</span>'}
-                    </div>
-                    <div class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${item.id}, '${title.replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}', '${type}')">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                </div>
-                <div class="card-info">
-                    <div class="card-title">${title}</div>
-                    <div class="card-meta">
+                <div class="detail-info">
+                    <h1>${currentTitle}</h1>
+                    <div class="detail-meta">
+                        <span class="rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
                         <span><i class="fas fa-calendar"></i> ${year}</span>
-                        <span>${type === 'tv' ? 'TV' : 'Movie'}</span>
+                        <span><i class="fas fa-clock"></i> ${runtime}</span>
+                    </div>
+                    <p class="detail-desc">${item.overview || 'No description available.'}</p>
+                    ${item.tagline ? `<p style="color: var(--accent); font-style: italic;">"${item.tagline}"</p>` : ''}
+                    <div class="detail-genres">
+                        ${genresList.map(g => `<span class="genre-tag">${g}</span>`).join('')}
                     </div>
                 </div>
-            </div>
-        `;
-    }
-
-    // Stream functionality
-    async function openContent(id) {
-        curId = id;
-        const endpoint = contentType === 'movie' ? `movie/${id}` : `tv/${id}`;
-        const item = await fetch(`https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}`).then(r => r.json());
-        currentTitle = item.title || item.name;
-
-        const recs = await fetchData(`${contentType}/${id}/recommendations`);
-        
-        window.history.pushState({}, '', `?watch=${contentType}-${id}`);
-
-        if (contentType === 'tv') {
-            loadSeasons(item);
-            document.getElementById('episodesContainer').style.display = 'block';
-            currentSeason = 1;
-            currentEpisode = 1;
-            loadEpisode(1, 1);
-        } else {
-            document.getElementById('episodesContainer').style.display = 'none';
-            loadMoviePlayer(id);
+            `;
+            
+            renderGrid('recGrid', recs.slice(0, 12));
+            showPage('stream');
         }
 
-        saveWatched(id, currentTitle, item.poster_path, item.backdrop_path, item.vote_average, item.release_date || item.first_air_date);
-
-        const genresList = item.genres ? item.genres.map(g => g.name) : [];
-        const year = (item.release_date || item.first_air_date || '').split('-')[0];
-        const runtime = contentType === 'movie' ? `${item.runtime} min` : `${item.number_of_seasons} Seasons`;
-
-        document.getElementById('contentDetails').innerHTML = `
-            <div class="detail-poster">
-                <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${currentTitle}">
-            </div>
-            <div class="detail-info">
-                <h1>${currentTitle}</h1>
-                <div class="detail-meta">
-                    <span class="rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
-                    <span><i class="fas fa-calendar"></i> ${year}</span>
-                    <span><i class="fas fa-clock"></i> ${runtime}</span>
-                </div>
-                <p class="detail-desc">${item.overview || 'No description available.'}</p>
-                ${item.tagline ? `<p style="color: var(--accent); font-style: italic;">"${item.tagline}"</p>` : ''}
-                <div class="detail-genres">
-                    ${genresList.map(g => `<span class="genre-tag">${g}</span>`).join('')}
-                </div>
-            </div>
-        `;
-
-        renderGrid('recGrid', recs.slice(0, 12));
-        showPage('stream');
-    }
-
-    function loadMoviePlayer(id) {
-        const frame = document.getElementById('videoFrame');
-        const servers = {
-            'vidsrc': `https://vidsrc.xyz/embed/movie/${id}`,
-            'vidlink': `https://vidlink.pro/movie/${id}`,
-            '2embed': `https://www.2embed.cc/embed/${id}`,
-            'superembed': `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-            'moviesapi': `https://moviesapi.club/movie/${id}`
-        };
-        frame.src = servers[currentServer] || servers['vidsrc'];
-    }
-
-    function switchServer(server, btn) {
-        currentServer = server;
-        document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        if (contentType === 'movie') {
-            loadMoviePlayer(curId);
-        } else {
-            loadEpisode(currentSeason, currentEpisode);
-        }
-        showToast(`Switched to ${btn.textContent.trim()}`);
-    }
-
-    async function loadSeasons(seriesData) {
-        const seasonCount = seriesData.number_of_seasons;
-        const tabs = document.getElementById('seasonTabs');
-        tabs.innerHTML = '';
-
-        for (let i = 1; i <= seasonCount; i++) {
-            const tab = document.createElement('div');
-            tab.className = 'season-tab' + (i === 1 ? ' active' : '');
-            tab.textContent = `Season ${i}`;
-            tab.onclick = () => selectSeason(i);
-            tabs.appendChild(tab);
+        function loadMoviePlayer(id) {
+            const frame = document.getElementById('videoFrame');
+            const servers = {
+                'vidsrc': `https://vidsrc.xyz/embed/movie/${id}`,
+                'vidlink': `https://vidlink.pro/movie/${id}`,
+                '2embed': `https://www.2embed.cc/embed/${id}`,
+                'superembed': `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+                'moviesapi': `https://moviesapi.club/movie/${id}`
+            };
+            frame.src = servers[currentServer] || servers['vidsrc'];
         }
 
-        loadEpisodesForSeason(1, curId);
-    }
+        function switchServer(server, btn) {
+            currentServer = server;
+            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (contentType === 'movie') {
+                loadMoviePlayer(curId);
+            } else {
+                loadEpisode(currentSeason, currentEpisode);
+            }
+            showToast(`Switched to ${btn.textContent.trim()}`);
+        }
 
-    async function selectSeason(season) {
-        currentSeason = season;
-        document.querySelectorAll('.season-tab').forEach((tab, idx) => {
-            tab.classList.toggle('active', idx === season - 1);
+        async function loadSeasons(seriesData) {
+            const seasonCount = seriesData.number_of_seasons;
+            const tabs = document.getElementById('seasonTabs');
+            tabs.innerHTML = '';
+            for (let i = 1; i <= seasonCount; i++) {
+                const tab = document.createElement('div');
+                tab.className = 'season-tab' + (i === 1 ? ' active' : '');
+                tab.textContent = `Season ${i}`;
+                tab.onclick = () => selectSeason(i);
+                tabs.appendChild(tab);
+            }
+            loadEpisodesForSeason(1, curId);
+        }
+
+        async function selectSeason(season) {
+            currentSeason = season;
+            document.querySelectorAll('.season-tab').forEach((tab, idx) => {
+                tab.classList.toggle('active', idx === season - 1);
+            });
+            loadEpisodesForSeason(season, curId);
+        }
+
+        async function loadEpisodesForSeason(season, seriesId) {
+            const seasonData = await fetch(`https://api.themoviedb.org/3/tv/${seriesId}/season/${season}?api_key=${API_KEY}`).then(r => r.json());
+            const grid = document.getElementById('episodeGrid');
+            grid.innerHTML = '';
+            seasonData.episodes.forEach(ep => {
+                const btn = document.createElement('div');
+                btn.className = 'episode-btn' + (ep.episode_number === 1 ? ' active' : '');
+                btn.textContent = `${ep.episode_number}`;
+                btn.onclick = () => loadEpisode(season, ep.episode_number);
+                grid.appendChild(btn);
+            });
+        }
+
+        function loadEpisode(season, episode) {
+            currentSeason = season;
+            currentEpisode = episode;
+            document.querySelectorAll('.episode-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === episode - 1);
+            });
+            const frame = document.getElementById('videoFrame');
+            const servers = {
+                'vidsrc': `https://vidsrc.xyz/embed/tv/${curId}/${season}/${episode}`,
+                'vidlink': `https://vidlink.pro/tv/${curId}/${season}/${episode}`,
+                '2embed': `https://www.2embed.cc/embedtv/${curId}&s=${season}&e=${episode}`,
+                'superembed': `https://multiembed.mov/?video_id=${curId}&tmdb=1&s=${season}&e=${episode}`,
+                'moviesapi': `https://moviesapi.club/tv/${curId}-${season}-${episode}`
+            };
+            frame.src = servers[currentServer] || servers['vidsrc'];
+            showToast(`Playing S${season}:E${episode}`);
+        }
+
+        // Favorites function
+        function toggleFavorite(id, title, poster, rating, date, type = contentType) {
+            const idx = favorites.findIndex(f => f.id === id);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+                showToast('Removed from My List');
+            } else {
+                favorites.push({ id, title, poster_path: poster, vote_average: rating, release_date: date, type });
+                showToast('Added to My List!');
+            }
+            localStorage.setItem('sids_favs', JSON.stringify(favorites));
+            updateFavCount();
+            
+            // Update UI if on favorites page
+            if (document.getElementById('favoritesPage').style.display === 'block') {
+                renderGrid('favGrid', favorites);
+            }
+        }
+
+        function updateFavCount() {
+            document.getElementById('favBadge').textContent = favorites.length;
+            document.getElementById('favTotal').textContent = favorites.length;
+        }
+
+        // Watch history
+        function saveWatched(id, title, poster, backdrop, rating, date) {
+            let watched = JSON.parse(localStorage.getItem('sids_watched') || '[]');
+            watched = watched.filter(m => m.id !== id);
+            watched.unshift({ id, title, poster_path: poster, backdrop_path: backdrop, vote_average: rating, release_date: date, type: contentType });
+            localStorage.setItem('sids_watched', JSON.stringify(watched.slice(0, 10)));
+        }
+
+        // Utilities
+        function highlightQuickChip(btn) {
+            document.querySelectorAll('.quick-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function scrollToGrid() {
+            const grid = document.getElementById('gridTitle');
+            window.scrollTo({ top: grid.offsetTop - 150, behavior: 'smooth' });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            if (e.key === 'Escape') {
+                goHome();
+                closeMovieInfo();
+                closeMobileSearch();
+                document.getElementById('searchRecommendations').style.display = 'none';
+            }
         });
-        loadEpisodesForSeason(season, curId);
-    }
 
-    async function loadEpisodesForSeason(season, seriesId) {
-        const seasonData = await fetch(`https://api.themoviedb.org/3/tv/${seriesId}/season/${season}?api_key=${API_KEY}`).then(r => r.json());
-        const grid = document.getElementById('episodeGrid');
-        grid.innerHTML = '';
-
-        seasonData.episodes.forEach(ep => {
-            const btn = document.createElement('div');
-            btn.className = 'episode-btn' + (ep.episode_number === 1 ? ' active' : '');
-            btn.textContent = `${ep.episode_number}`;
-            btn.onclick = () => loadEpisode(season, ep.episode_number);
-            grid.appendChild(btn);
+        // Close search recommendations when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+                document.getElementById('searchRecommendations').style.display = 'none';
+            }
         });
-    }
-
-    function loadEpisode(season, episode) {
-        currentSeason = season;
-        currentEpisode = episode;
-
-        document.querySelectorAll('.episode-btn').forEach((btn, idx) => {
-            btn.classList.toggle('active', idx === episode - 1);
-        });
-
-        const frame = document.getElementById('videoFrame');
-        const servers = {
-            'vidsrc': `https://vidsrc.xyz/embed/tv/${curId}/${season}/${episode}`,
-            'vidlink': `https://vidlink.pro/tv/${curId}/${season}/${episode}`,
-            '2embed': `https://www.2embed.cc/embedtv/${curId}&s=${season}&e=${episode}`,
-            'superembed': `https://multiembed.mov/?video_id=${curId}&tmdb=1&s=${season}&e=${episode}`,
-            'moviesapi': `https://moviesapi.club/tv/${curId}-${season}-${episode}`
-        };
-        frame.src = servers[currentServer] || servers['vidsrc'];
-        showToast(`Playing S${season}:E${episode}`);
-    }
-
-    // Favorites
-    function toggleFavorite(id, title, poster, rating, date, type = contentType) {
-        const idx = favorites.findIndex(f => f.id === id);
-        if (idx > -1) {
-            favorites.splice(idx, 1);
-            showToast('Removed from My List');
-        } else {
-            favorites.push({ id, title, poster_path: poster, vote_average: rating, release_date: date, type });
-            showToast('Added to My List!');
-        }
-        localStorage.setItem('sids_favs', JSON.stringify(favorites));
-        updateFavCount();
-    }
-
-    function updateFavCount() {
-        document.getElementById('favBadge').textContent = favorites.length;
-        document.getElementById('favTotal').textContent = favorites.length;
-    }
-
-    // Watch history
-    function saveWatched(id, title, poster, backdrop, rating, date) {
-        let watched = JSON.parse(localStorage.getItem('sids_watched') || '[]');
-        watched = watched.filter(m => m.id !== id);
-        watched.unshift({ id, title, poster_path: poster, backdrop_path: backdrop, vote_average: rating, release_date: date, type: contentType });
-        localStorage.setItem('sids_watched', JSON.stringify(watched.slice(0, 10)));
-    }
-
-    // Utilities
-    function highlightQuickChip(btn) {
-        document.querySelectorAll('.quick-chip').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    function scrollToGrid() {
-        const grid = document.getElementById('gridTitle');
-        window.scrollTo({ top: grid.offsetTop - 150, behavior: 'smooth' });
-    }
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '/') {
-            e.preventDefault();
-            document.getElementById('searchInput').focus();
-        }
-        if (e.key === 'Escape') {
-            goHome();
-        }
-    });
-</script>
-
+    </script>
 </body>
 </html>
