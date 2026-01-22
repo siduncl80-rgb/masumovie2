@@ -59,6 +59,63 @@
             transition: background 0.3s ease;
         }
 
+        /* NEW: Logo Animation Overlay */
+        .logo-animation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f0f;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeOut 0.8s ease 2.2s forwards;
+        }
+
+        .logo-animation {
+            position: relative;
+            text-align: center;
+        }
+
+        .logo-animation-text {
+            font-size: 72px;
+            font-weight: 900;
+            color: #e50914;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: scale(0.8);
+            animation: logoPop 2s ease forwards;
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+        }
+
+        .logo-animation-sub {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-top: 10px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2s forwards;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        @keyframes logoPop {
+            0% { opacity: 0; transform: scale(0.8); }
+            60% { opacity: 1; transform: scale(1.1); }
+            80% { transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -101,6 +158,11 @@
             font-weight: 800;
             color: var(--accent);
             letter-spacing: -1px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-text:hover {
+            transform: scale(1.05);
         }
 
         .nav-menu {
@@ -261,6 +323,127 @@
         .theme-toggle:hover {
             background: var(--surface);
             color: var(--text-main);
+        }
+
+        /* NEW: Quick Info Tab - Updated to match image reference */
+        .quick-info-tab {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            padding: 16px 12px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+        }
+
+        .movie-card:hover .quick-info-tab {
+            transform: translateY(0);
+        }
+
+        .quick-info-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .quick-info-rating {
+            background: rgba(255, 215, 0, 0.9);
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .quick-info-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .quick-info-subtitle {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-info-subtitle span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .quick-info-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .quick-info-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-info-btn {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quick-play-btn {
+            background: var(--accent);
+            color: white;
+            flex: 1;
+            padding: 0 12px;
+        }
+
+        .quick-play-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        .quick-fav-btn {
+            width: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .quick-fav-btn:hover {
+            background: rgba(229, 9, 20, 0.2);
+            color: var(--accent);
+        }
+
+        .quick-fav-btn.active {
+            background: var(--accent);
+            color: white;
         }
 
         /* Mobile Search */
@@ -570,6 +753,36 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* NEW: Server Warning */
+        .server-warning {
+            background: rgba(229, 9, 20, 0.1);
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .server-warning i {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        .server-warning span {
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
         /* Mini Taskbar */
         .mini-taskbar {
             position: fixed;
@@ -586,6 +799,16 @@
         @media (max-width: 768px) {
             .mini-taskbar { display: block; }
             .nav-menu { display: none; }
+            .quick-info-tab {
+                padding: 12px;
+            }
+            .quick-play-btn {
+                font-size: 11px;
+                padding: 0 8px;
+            }
+            .quick-info-desc {
+                -webkit-line-clamp: 1;
+            }
         }
 
         .taskbar-items {
@@ -1694,15 +1917,43 @@
                 width: 100%;
                 right: -100%;
             }
+            .logo-animation-text {
+                font-size: 48px;
+            }
+            .quick-info-tab {
+                padding: 10px;
+            }
+            .quick-info-desc {
+                font-size: 11px;
+                -webkit-line-clamp: 1;
+            }
         }
 
         @media (max-width: 480px) {
             .billboard-actions { flex-direction: column; width: 100%; }
             .btn { width: 100%; }
+            .quick-info-tab {
+                display: block; /* Keep it visible */
+                padding: 8px;
+            }
+            .quick-info-title {
+                font-size: 13px;
+            }
+            .quick-info-desc {
+                display: none; /* Hide description on very small screens */
+            }
         }
     </style>
 </head>
 <body>
+    <!-- LOGO ANIMATION OVERLAY -->
+    <div class="logo-animation-overlay" id="logoAnimation">
+        <div class="logo-animation">
+            <div class="logo-animation-text">SIDS</div>
+            <div class="logo-animation-sub">Streaming Universe</div>
+        </div>
+    </div>
+
     <!-- HEADER -->
     <header id="mainHeader">
         <div class="logo-container" onclick="goHome()">
@@ -1999,6 +2250,15 @@
             <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
 
+        <!-- NEW: Server Warning -->
+        <div class="server-warning" id="serverWarning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>If the current server doesn't work, please try another server from the list below.</span>
+            <button class="quick-info-btn" onclick="document.getElementById('serverWarning').style.display = 'none'" style="background: transparent; color: var(--text-dim); border: none; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
         <div class="server-list">
             <div class="server-btn active" onclick="switchServer('vidsrc', this)">
                 <i class="fas fa-play-circle"></i> VidSrc
@@ -2127,6 +2387,14 @@
 
         // Initialize
         window.onload = async () => {
+            // Show logo animation
+            setTimeout(() => {
+                document.getElementById('logoAnimation').style.display = 'none';
+                initializeApp();
+            }, 2500);
+        };
+
+        async function initializeApp() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
                 document.body.classList.add('light-mode');
@@ -2147,7 +2415,7 @@
             renderGenreGrid();
             initializeFilterPanel();
             loadHistory();
-        };
+        }
 
         async function loadHomePage() {
             await loadTrending();
@@ -2737,6 +3005,9 @@
             const year = (item.release_date || item.first_air_date || '').split('-')[0] || '';
             const title = item.title || item.name;
             const type = forceType || (item.first_air_date !== undefined ? 'tv' : 'movie');
+            const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+            const description = item.overview || 'No description available.';
+            const truncatedDesc = description.length > 80 ? description.substring(0, 80) + '...' : description;
             
             return `
                 <div class="movie-card">
@@ -2746,12 +3017,35 @@
                             <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
                         <div class="card-badges">
-                            <span class="badge badge-rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
+                            <span class="badge badge-rating"><i class="fas fa-star"></i> ${rating}</span>
                             <span class="badge badge-quality">HD</span>
                         </div>
                         <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${item.id}, '${title.replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}', '${type}')">
                             <i class="fas fa-heart"></i>
                         </button>
+                        <!-- NEW: Updated Quick Info Tab matching image reference -->
+                        <div class="quick-info-tab">
+                            <div class="quick-info-header">
+                                <span class="quick-info-rating">
+                                    <i class="fas fa-star"></i> ${rating}
+                                </span>
+                            </div>
+                            <div class="quick-info-title">${title}</div>
+                            <div class="quick-info-subtitle">
+                                <span><i class="fas fa-film"></i> ${type === 'tv' ? 'TV Show' : 'Movie'}</span>
+                                <span>•</span>
+                                <span><i class="fas fa-calendar"></i> ${year}</span>
+                            </div>
+                            <div class="quick-info-desc">${truncatedDesc}</div>
+                            <div class="quick-info-actions">
+                                <button class="quick-info-btn quick-play-btn" onclick="event.stopPropagation(); contentType='${type}'; openContent(${item.id})">
+                                    <i class="fas fa-play"></i> Watch Now
+                                </button>
+                                <button class="quick-info-btn quick-fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${item.id}, '${title.replace(/'/g, "\\'")}', '${item.poster_path}', ${item.vote_average}, '${item.release_date || item.first_air_date || ''}', '${type}')">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-info" onclick="showMovieInfo(${JSON.stringify(item).replace(/"/g, '&quot;')}, '${type}')">
                         <div class="card-title">${title}</div>
@@ -2812,6 +3106,9 @@
             
             renderGrid('recGrid', recs.slice(0, 12));
             showPage('stream');
+            
+            // Show server warning
+            document.getElementById('serverWarning').style.display = 'flex';
         }
 
         function loadMoviePlayer(id) {
@@ -2906,6 +3203,12 @@
             
             if (document.getElementById('favoritesPage').style.display === 'block') {
                 renderGrid('favGrid', favorites);
+            }
+            
+            // Update quick info tab button state
+            const quickFavBtn = document.querySelector(`.movie-card[data-id="${id}"] .quick-fav-btn`);
+            if (quickFavBtn) {
+                quickFavBtn.classList.toggle('active', idx === -1);
             }
         }
 
