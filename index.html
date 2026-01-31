@@ -929,7 +929,7 @@
             color: white;
         }
 
-        /* NEW: Watch Party Panel */
+        /* NEW: Watch Party Panel - UPDATED */
         .watch-party-panel {
             min-width: 320px;
         }
@@ -1026,6 +1026,90 @@
             background: var(--accent-hover);
         }
 
+        .party-btn-danger {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+
+        .party-btn-danger:hover {
+            background: #ff0000;
+        }
+
+        /* NEW: Join Party Modal */
+        .join-party-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .join-party-modal.active {
+            display: flex;
+        }
+
+        .join-party-box {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        .join-party-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .join-party-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        .join-party-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .join-party-hint {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        .join-party-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .join-party-buttons .btn {
+            flex: 1;
+        }
+
         /* NEW: Server Warning */
         .server-warning {
             background: rgba(229, 9, 20, 0.1);
@@ -1089,6 +1173,18 @@
             .floating-panel {
                 min-width: calc(100vw - 32px);
                 right: 16px;
+            }
+            .floating-btn {
+                width: 42px;
+                height: 42px;
+            }
+            .floating-btn i {
+                font-size: 16px;
+            }
+            .join-party-input {
+                font-size: 20px;
+                letter-spacing: 6px;
+                padding: 14px;
             }
         }
 
@@ -2259,6 +2355,14 @@
             .floating-btn i {
                 font-size: 16px;
             }
+            .join-party-box {
+                padding: 16px;
+            }
+            .join-party-input {
+                font-size: 18px;
+                letter-spacing: 4px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -2367,6 +2471,33 @@
         </div>
     </div>
 
+    <!-- JOIN PARTY MODAL -->
+    <div class="join-party-modal" id="joinPartyModal">
+        <div class="join-party-box">
+            <h2 class="join-party-title">Join Watch Party</h2>
+            <p style="color: var(--text-dim); margin-bottom: 20px;">Enter the 6-digit party code to join</p>
+            <input type="text" 
+                   class="join-party-input" 
+                   id="joinPartyInput" 
+                   maxlength="6" 
+                   placeholder="ABCDEF" 
+                   onkeyup="handleJoinPartyInput(event)"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="characters"
+                   spellcheck="false">
+            <div class="join-party-hint">Only letters A-Z and numbers 2-9 (no 0, 1, I, O)</div>
+            <div class="join-party-buttons">
+                <button class="btn btn-secondary" onclick="closeJoinPartyModal()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" onclick="joinPartyFromInput()">
+                    Join Party
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- FILTER PANEL -->
     <div class="filter-panel" id="filterPanel">
         <h3 style="margin-bottom: 24px; font-size: 18px;">Filters</h3>
@@ -2436,19 +2567,35 @@
             <div class="party-info">
                 <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Watch together in real-time!</p>
                 <div class="party-code" id="partyCode">----</div>
-                <div style="text-align: center; margin-bottom: 12px;">
-                    <button class="party-btn party-btn-primary" onclick="generatePartyCode()">
+                
+                <div id="partyUsers" class="party-users"></div>
+                
+                <!-- Join/Create Party Buttons -->
+                <div style="text-align: center; margin: 16px 0;">
+                    <button class="party-btn party-btn-primary" onclick="generatePartyCode()" style="margin-bottom: 8px;">
                         <i class="fas fa-plus"></i> Create Party
                     </button>
+                    <button class="party-btn" onclick="showJoinPartyModal()">
+                        <i class="fas fa-sign-in-alt"></i> Join Party
+                    </button>
                 </div>
-                <div id="partyUsers" class="party-users"></div>
-                <div class="party-controls">
+                
+                <!-- Party Controls (only shown when in a party) -->
+                <div class="party-controls" id="activePartyControls" style="display: none;">
                     <button class="party-btn" onclick="copyPartyCode()">
                         <i class="fas fa-copy"></i> Copy Code
                     </button>
                     <button class="party-btn" onclick="shareParty()">
                         <i class="fas fa-share"></i> Invite
                     </button>
+                    <button class="party-btn party-btn-danger" onclick="leaveParty()">
+                        <i class="fas fa-sign-out-alt"></i> Leave
+                    </button>
+                </div>
+                
+                <!-- Party Status (only shown when in a party) -->
+                <div id="partyStatus" style="display: none; margin-top: 12px; padding: 8px; background: rgba(229, 9, 20, 0.1); border-radius: 6px; font-size: 12px; color: var(--text-dim);">
+                    <i class="fas fa-info-circle"></i> <span id="partyStatusText"></span>
                 </div>
             </div>
         </div>
@@ -2734,7 +2881,7 @@
         let currentSort = 'popularity';
         let cachedItems = [];
 
-        // NEW: Watch Party Variables
+        // NEW: Watch Party Variables - ENHANCED
         let watchParty = {
             active: false,
             code: null,
@@ -2743,7 +2890,8 @@
             syncInterval: null,
             lastSyncTime: 0,
             peerConnections: {},
-            dataChannel: null
+            dataChannel: null,
+            lastActivity: Date.now()
         };
 
         // NEW: 4K Streaming Servers (Premium & Ad-Free)
@@ -2938,51 +3086,35 @@
             loadHistory();
             setupFloatingServers();
             
-            // NEW: Setup watch party
-            setupWatchParty();
+            // NEW: Enhanced watch party setup
+            setupEnhancedWatchParty();
             
             // NEW: Add skeleton loading initially
             showSkeletonLoading();
-        }
-
-        // NEW: Skeleton Loading
-        function showSkeletonLoading() {
-            const grid = document.getElementById('mainGrid');
-            if (grid && grid.children.length === 0) {
-                grid.innerHTML = Array(20).fill('<div class="movie-card"><div class="skeleton skeleton-card"></div></div>').join('');
-            }
-        }
-
-        // NEW: Setup Floating Servers
-        function setupFloatingServers() {
-            const container = document.getElementById('floatingServers');
-            container.innerHTML = '';
             
-            Object.entries(premiumServers).forEach(([key, server]) => {
-                const btn = document.createElement('div');
-                btn.className = `floating-server-btn ${key === currentServer ? 'active' : ''}`;
-                btn.innerHTML = `
-                    <div>
-                        <strong>${server.name}</strong>
-                        <div style="font-size: 11px; color: var(--text-dim);">${server.ads} ads</div>
-                    </div>
-                    <span class="server-quality quality-${server.quality.toLowerCase()}">${server.quality}</span>
-                `;
-                btn.onclick = () => switchServer(key, btn);
-                container.appendChild(btn);
-            });
+            // NEW: Add mobile keyboard support for party code
+            setupMobileKeyboardSupport();
         }
 
-        // NEW: Watch Party Functions
-        function setupWatchParty() {
+        // NEW: Enhanced Watch Party Setup
+        function setupEnhancedWatchParty() {
             // Load existing party if any
             const savedParty = localStorage.getItem('sids_party');
             if (savedParty) {
-                const party = JSON.parse(savedParty);
-                if (party.active && party.code) {
-                    watchParty = party;
-                    updatePartyUI();
-                    startPartySync();
+                try {
+                    const party = JSON.parse(savedParty);
+                    // Check if party is still valid (within 24 hours)
+                    if (party.active && party.code && (Date.now() - party.lastActivity < 24 * 60 * 60 * 1000)) {
+                        watchParty = party;
+                        updateEnhancedPartyUI();
+                        startPartySync();
+                    } else {
+                        // Party expired, clear it
+                        localStorage.removeItem('sids_party');
+                    }
+                } catch (e) {
+                    console.error('Error parsing saved party:', e);
+                    localStorage.removeItem('sids_party');
                 }
             }
             
@@ -2990,6 +3122,9 @@
             if (!localStorage.getItem('sids_user_id')) {
                 localStorage.setItem('sids_user_id', generateUserId());
             }
+            
+            // Update floating button badge
+            updatePartyCount();
         }
 
         function generateUserId() {
@@ -2997,7 +3132,7 @@
         }
 
         function generatePartyCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0,1,I,O for clarity
             let code = '';
             for (let i = 0; i < 6; i++) {
                 code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -3015,11 +3150,12 @@
                 host: true,
                 syncInterval: null,
                 lastSyncTime: Date.now(),
-                currentContent: null
+                currentContent: null,
+                lastActivity: Date.now()
             };
             
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            updatePartyUI();
+            updateEnhancedPartyUI();
             startPartySync();
             showToast(`Party created! Code: ${code}`);
             
@@ -3028,7 +3164,54 @@
             url.searchParams.set('party', code);
             window.history.pushState({}, '', url);
             
+            // Update party count badge
+            updatePartyCount();
+            
             return code;
+        }
+
+        function showJoinPartyModal() {
+            document.getElementById('joinPartyModal').classList.add('active');
+            document.getElementById('joinPartyInput').focus();
+            // Close other panels
+            document.getElementById('watchPartyPanel').classList.remove('active');
+        }
+
+        function closeJoinPartyModal() {
+            document.getElementById('joinPartyModal').classList.remove('active');
+            document.getElementById('joinPartyInput').value = '';
+        }
+
+        function handleJoinPartyInput(event) {
+            const input = document.getElementById('joinPartyInput');
+            let value = input.value.toUpperCase();
+            
+            // Filter out invalid characters
+            value = value.replace(/[^A-Z2-9]/g, '');
+            
+            // Limit to 6 characters
+            if (value.length > 6) {
+                value = value.substring(0, 6);
+            }
+            
+            input.value = value;
+            
+            // Auto-submit on 6 characters
+            if (value.length === 6 && event.key !== 'Backspace') {
+                joinPartyFromInput();
+            }
+        }
+
+        function joinPartyFromInput() {
+            const code = document.getElementById('joinPartyInput').value.toUpperCase();
+            if (code.length !== 6) {
+                showToast('Please enter a 6-digit code');
+                document.getElementById('joinPartyInput').focus();
+                return;
+            }
+            
+            joinParty(code);
+            closeJoinPartyModal();
         }
 
         async function joinParty(code) {
@@ -3037,8 +3220,19 @@
                 return;
             }
             
-            // In a real app, you would connect to a server here
-            // For demo, we'll simulate joining
+            // Validate code format
+            const validChars = /^[A-Z2-9]{6}$/;
+            if (!validChars.test(code)) {
+                showToast('Invalid party code format');
+                return;
+            }
+            
+            // Simulate joining (in real app, connect to server)
+            showToast(`Joining party ${code}...`);
+            
+            // Add a small delay to simulate network request
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
             watchParty = {
                 active: true,
                 code: code,
@@ -3057,27 +3251,39 @@
                     }
                 ],
                 host: false,
-                currentContent: null
+                syncInterval: null,
+                lastSyncTime: Date.now(),
+                currentContent: null,
+                lastActivity: Date.now()
             };
             
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            updatePartyUI();
+            updateEnhancedPartyUI();
             showToast(`Joined party ${code}!`);
             
             // Update URL
             const url = new URL(window.location);
             url.searchParams.set('party', code);
             window.history.pushState({}, '', url);
+            
+            // Update party count badge
+            updatePartyCount();
+            
+            // Start syncing if not already
+            if (!watchParty.syncInterval) {
+                startPartySync();
+            }
         }
 
-        function updatePartyUI() {
+        function updateEnhancedPartyUI() {
             const codeElement = document.getElementById('partyCode');
             const usersElement = document.getElementById('partyUsers');
-            const countElement = document.getElementById('partyCount');
+            const activeControls = document.getElementById('activePartyControls');
+            const partyStatus = document.getElementById('partyStatus');
+            const partyStatusText = document.getElementById('partyStatusText');
             
             if (watchParty.active && watchParty.code) {
                 codeElement.textContent = watchParty.code;
-                countElement.textContent = watchParty.users.length;
                 
                 // Render users
                 usersElement.innerHTML = watchParty.users.map(user => `
@@ -3088,10 +3294,80 @@
                         ${user.name} ${user.host ? '(Host)' : ''}
                     </div>
                 `).join('');
+                
+                // Show active controls
+                activeControls.style.display = 'flex';
+                partyStatus.style.display = 'block';
+                
+                // Update status text
+                const timeSince = Math.floor((Date.now() - watchParty.lastActivity) / 1000);
+                if (timeSince < 60) {
+                    partyStatusText.textContent = 'Active now';
+                } else if (timeSince < 3600) {
+                    partyStatusText.textContent = `Active ${Math.floor(timeSince / 60)} minutes ago`;
+                } else {
+                    partyStatusText.textContent = 'Recently active';
+                }
             } else {
                 codeElement.textContent = '----';
                 usersElement.innerHTML = '';
+                activeControls.style.display = 'none';
+                partyStatus.style.display = 'none';
+            }
+        }
+
+        function updatePartyCount() {
+            const countElement = document.getElementById('partyCount');
+            if (watchParty.active && watchParty.users) {
+                countElement.textContent = watchParty.users.length;
+                countElement.style.display = 'block';
+            } else {
                 countElement.textContent = '0';
+                countElement.style.display = 'none';
+            }
+        }
+
+        function leaveParty() {
+            if (watchParty.active) {
+                const wasHost = watchParty.host;
+                const partyCode = watchParty.code;
+                
+                // Stop sync interval
+                if (watchParty.syncInterval) {
+                    clearInterval(watchParty.syncInterval);
+                }
+                
+                // Reset watch party
+                watchParty = {
+                    active: false,
+                    code: null,
+                    users: [],
+                    host: false,
+                    syncInterval: null,
+                    lastSyncTime: 0,
+                    peerConnections: {},
+                    dataChannel: null,
+                    lastActivity: Date.now()
+                };
+                
+                // Clear from localStorage
+                localStorage.removeItem('sids_party');
+                
+                // Update UI
+                updateEnhancedPartyUI();
+                updatePartyCount();
+                
+                // Remove party from URL
+                const url = new URL(window.location);
+                url.searchParams.delete('party');
+                window.history.pushState({}, '', url);
+                
+                showToast(`Left party ${partyCode}`);
+                
+                // If host left, show message
+                if (wasHost) {
+                    showToast('Party ended (host left)');
+                }
             }
         }
 
@@ -3100,7 +3376,7 @@
                 clearInterval(watchParty.syncInterval);
             }
             
-            // Sync every 5 seconds (in real app, use WebSockets)
+            // Sync every 10 seconds (optimized for mobile)
             watchParty.syncInterval = setInterval(() => {
                 if (watchParty.host) {
                     // Host sends sync data
@@ -3109,7 +3385,14 @@
                     // Client requests sync
                     requestSync();
                 }
-            }, 5000);
+                
+                // Update last activity
+                watchParty.lastActivity = Date.now();
+                localStorage.setItem('sids_party', JSON.stringify(watchParty));
+                
+                // Update UI
+                updateEnhancedPartyUI();
+            }, 10000);
         }
 
         function syncPartyData() {
@@ -3140,7 +3423,7 @@
                 if (navigator.share) {
                     navigator.share({
                         title: 'Join my watch party on SIDS!',
-                        text: `Use code ${watchParty.code} to join the party`,
+                        text: `Use code ${watchParty.code} to join the party and watch together`,
                         url: url.toString()
                     });
                 } else {
@@ -3156,6 +3439,11 @@
             
             panel.classList.toggle('active');
             serverPanel.classList.remove('active');
+            
+            // Update UI when panel opens
+            if (panel.classList.contains('active')) {
+                updateEnhancedPartyUI();
+            }
         }
 
         function toggleServerPanel() {
@@ -3166,11 +3454,53 @@
             partyPanel.classList.remove('active');
         }
 
+        // NEW: Setup mobile keyboard support
+        function setupMobileKeyboardSupport() {
+            // Ensure join party input gets proper keyboard on mobile
+            const joinPartyInput = document.getElementById('joinPartyInput');
+            if (joinPartyInput) {
+                joinPartyInput.setAttribute('inputmode', 'text');
+                joinPartyInput.setAttribute('autocorrect', 'off');
+                joinPartyInput.setAttribute('autocapitalize', 'characters');
+            }
+        }
+
+        // NEW: Skeleton Loading
+        function showSkeletonLoading() {
+            const grid = document.getElementById('mainGrid');
+            if (grid && grid.children.length === 0) {
+                grid.innerHTML = Array(20).fill('<div class="movie-card"><div class="skeleton skeleton-card"></div></div>').join('');
+            }
+        }
+
+        // NEW: Setup Floating Servers
+        function setupFloatingServers() {
+            const container = document.getElementById('floatingServers');
+            container.innerHTML = '';
+            
+            Object.entries(premiumServers).forEach(([key, server]) => {
+                const btn = document.createElement('div');
+                btn.className = `floating-server-btn ${key === currentServer ? 'active' : ''}`;
+                btn.innerHTML = `
+                    <div>
+                        <strong>${server.name}</strong>
+                        <div style="font-size: 11px; color: var(--text-dim);">${server.ads} ads</div>
+                    </div>
+                    <span class="server-quality quality-${server.quality.toLowerCase()}">${server.quality}</span>
+                `;
+                btn.onclick = () => switchServer(key, btn);
+                container.appendChild(btn);
+            });
+        }
+
         // Close panels when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.floating-controls')) {
                 document.getElementById('watchPartyPanel').classList.remove('active');
                 document.getElementById('serverPanel').classList.remove('active');
+            }
+            if (!e.target.closest('.join-party-box') && !e.target.closest('.join-party-btn')) {
+                closeJoinPartyModal();
             }
         });
 
@@ -3239,6 +3569,9 @@
             // Close panels
             document.getElementById('filterPanel').classList.remove('active');
             document.getElementById('historyPanel').classList.remove('active');
+            document.getElementById('joinPartyModal').classList.remove('active');
+            document.getElementById('watchPartyPanel').classList.remove('active');
+            document.getElementById('serverPanel').classList.remove('active');
             
             window.scrollTo(0, 0);
         }
@@ -4174,6 +4507,7 @@
                 closeMovieInfo();
                 closeMobileSearch();
                 closeTrailer();
+                closeJoinPartyModal();
                 document.getElementById('searchRecommendations').style.display = 'none';
                 document.getElementById('filterPanel').classList.remove('active');
                 document.getElementById('historyPanel').classList.remove('active');
@@ -4188,6 +4522,10 @@
             if (e.key === 's' && e.ctrlKey) {
                 e.preventDefault();
                 toggleServerPanel();
+            }
+            if (e.key === 'j' && e.ctrlKey && e.shiftKey) {
+                e.preventDefault();
+                showJoinPartyModal();
             }
         });
 
@@ -4204,6 +4542,10 @@
             }
             if (!e.target.closest('.sort-dropdown')) {
                 document.getElementById('sortMenu').classList.remove('active');
+            }
+            if (!e.target.closest('.floating-controls')) {
+                document.getElementById('watchPartyPanel').classList.remove('active');
+                document.getElementById('serverPanel').classList.remove('active');
             }
         });
 
@@ -4238,6 +4580,14 @@
             if (title) {
                 btn.addEventListener('mouseenter', () => showTooltip(btn, title));
             }
+        });
+
+        // NEW: Handle back button for mobile
+        window.addEventListener('popstate', function(event) {
+            // Close modals when back button is pressed
+            document.getElementById('joinPartyModal').classList.remove('active');
+            document.getElementById('watchPartyPanel').classList.remove('active');
+            document.getElementById('serverPanel').classList.remove('active');
         });
     </script>
 </body>
