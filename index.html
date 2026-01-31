@@ -1167,7 +1167,7 @@
                 -webkit-line-clamp: 1;
             }
             .floating-controls {
-                bottom: 70px;
+                bottom: 120px; /* Increased for mobile visibility above nav bar */
                 right: 16px;
             }
             .floating-panel {
@@ -2331,7 +2331,7 @@
                 -webkit-line-clamp: 1;
             }
             .floating-controls {
-                bottom: 100px; /* Increased from 70px for better visibility */
+                bottom: 120px;
                 right: 16px;
             }
         }
@@ -2475,7 +2475,7 @@
 
     <!-- JOIN PARTY MODAL -->
     <div class="join-party-modal" id="joinPartyModal" onclick="if(event.target === this) closeJoinPartyModal()">
-        <div class="join-party-box">
+        <div class="join-party-box" onclick="event.stopPropagation()">
             <h2 class="join-party-title">Join Watch Party</h2>
             <p style="color: var(--text-dim); margin-bottom: 20px;">Enter the 6-digit party code to join</p>
             <input type="text" 
@@ -2484,6 +2484,8 @@
                    maxlength="6" 
                    placeholder="ABCDEF" 
                    onkeyup="handleJoinPartyInput(event)"
+                   ontouchend="this.focus()"
+                   inputmode="text"
                    autocomplete="off"
                    autocorrect="off"
                    autocapitalize="characters"
