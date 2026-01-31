@@ -6,7 +6,7 @@
     <title>SIDS | Stream Movies & Series Free - Watch HD Online</title>
   
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json">a
     <meta name="theme-color" content="#0f0f0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -2365,6 +2365,7 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
     <!-- LOGO ANIMATION OVERLAY -->
@@ -2566,12 +2567,19 @@
             </div>
             <div class="party-info">
                 <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Watch together in real-time!</p>
-                <div class="party-code" id="partyCode">----</div>
+                
+                <!-- Name Input (Only shown when not in party) -->
+                <div id="partyNameInput" style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">Your Nickname</label>
+                    <input type="text" id="userNickname" placeholder="Enter name..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font-size: 13px;">
+                </div>
+
+                <div class="party-code" id="partyCode" style="display: none;">----</div>
                 
                 <div id="partyUsers" class="party-users"></div>
                 
                 <!-- Join/Create Party Buttons -->
-                <div style="text-align: center; margin: 16px 0;">
+                <div id="partySetupButtons" style="text-align: center; margin: 16px 0;">
                     <button class="party-btn party-btn-primary" onclick="generatePartyCode()" style="margin-bottom: 8px;">
                         <i class="fas fa-plus"></i> Create Party
                     </button>
@@ -2588,6 +2596,10 @@
                     <button class="party-btn" onclick="shareParty()">
                         <i class="fas fa-share"></i> Invite
                     </button>
+                    <!-- Host Only: Sync Play -->
+                    <button class="party-btn" id="syncPlayBtn" onclick="triggerSyncPlay()" style="display: none; background: var(--accent);">
+                        <i class="fas fa-play"></i> Sync Play
+                    </button>
                     <button class="party-btn party-btn-danger" onclick="leaveParty()">
                         <i class="fas fa-sign-out-alt"></i> Leave
                     </button>
@@ -2596,6 +2608,19 @@
                 <!-- Party Status (only shown when in a party) -->
                 <div id="partyStatus" style="display: none; margin-top: 12px; padding: 8px; background: rgba(229, 9, 20, 0.1); border-radius: 6px; font-size: 12px; color: var(--text-dim);">
                     <i class="fas fa-info-circle"></i> <span id="partyStatusText"></span>
+                </div>
+
+                <!-- Chat UI (only shown when in a party) -->
+                <div id="partyChat" style="display: none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px;">
+                    <div id="chatMessages" style="height: 250px; overflow-y: auto; margin-bottom: 8px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                        <!-- Messages will appear here -->
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChatMessage()" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font-size: 12px;">
+                        <button onclick="sendChatMessage()" style="padding: 8px; border-radius: 4px; background: var(--accent); color: white; border: none; cursor: pointer;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2886,11 +2911,12 @@
             active: false,
             code: null,
             users: [],
-            host: false,
+            isHost: false,
+            peer: null,
+            conn: null,
+            connections: [],
             syncInterval: null,
-            lastSyncTime: 0,
-            peerConnections: {},
-            dataChannel: null,
+            lastSyncState: {},
             lastActivity: Date.now()
         };
 
@@ -3096,35 +3122,12 @@
             setupMobileKeyboardSupport();
         }
 
-        // NEW: Enhanced Watch Party Setup
+        // NEW: Enhanced Watch Party Setup (PeerJS)
+
+
         function setupEnhancedWatchParty() {
-            // Load existing party if any
-            const savedParty = localStorage.getItem('sids_party');
-            if (savedParty) {
-                try {
-                    const party = JSON.parse(savedParty);
-                    // Check if party is still valid (within 24 hours)
-                    if (party.active && party.code && (Date.now() - party.lastActivity < 24 * 60 * 60 * 1000)) {
-                        watchParty = party;
-                        updateEnhancedPartyUI();
-                        startPartySync();
-                    } else {
-                        // Party expired, clear it
-                        localStorage.removeItem('sids_party');
-                    }
-                } catch (e) {
-                    console.error('Error parsing saved party:', e);
-                    localStorage.removeItem('sids_party');
-                }
-            }
-            
-            // Generate user ID if not exists
-            if (!localStorage.getItem('sids_user_id')) {
-                localStorage.setItem('sids_user_id', generateUserId());
-            }
-            
-            // Update floating button badge
-            updatePartyCount();
+            // Clean up old sessions
+            if (watchParty.peer) watchParty.peer.destroy();
         }
 
         function generateUserId() {
@@ -3132,40 +3135,58 @@
         }
 
         function generatePartyCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0,1,I,O for clarity
+            const nameInput = document.getElementById('userNickname');
+            const myName = nameInput.value.trim() || 'Host';
+            
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
-            for (let i = 0; i < 6; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
             
-            watchParty = {
-                active: true,
-                code: code,
-                users: [{
-                    id: localStorage.getItem('sids_user_id'),
-                    name: 'You',
-                    host: true,
-                    joined: Date.now()
-                }],
-                host: true,
-                syncInterval: null,
-                lastSyncTime: Date.now(),
-                currentContent: null,
-                lastActivity: Date.now()
-            };
+            const peerId = 'sids-party-' + code;
             
-            localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            updateEnhancedPartyUI();
-            startPartySync();
-            showToast(`Party created! Code: ${code}`);
+            if (watchParty.peer) watchParty.peer.destroy();
             
-            // Update URL with party code
-            const url = new URL(window.location);
-            url.searchParams.set('party', code);
-            window.history.pushState({}, '', url);
+            watchParty.peer = new Peer(peerId);
             
-            // Update party count badge
-            updatePartyCount();
+            watchParty.peer.on('open', (id) => {
+                watchParty.active = true;
+                watchParty.code = code;
+                watchParty.isHost = true;
+                watchParty.users = [{ id: id, name: myName + ' (You)', host: true }];
+                watchParty.connections = [];
+                
+                updateEnhancedPartyUI();
+                showToast(`Party Created! Code: ${code}`);
+                document.getElementById('partyChat').style.display = 'block';
+                
+                // Start Sync Loop
+                startPartySync();
+                
+                watchParty.peer.on('connection', (conn) => {
+                    watchParty.connections.push(conn);
+                    
+                    conn.on('open', () => {
+                        // Wait for join message
+                    });
+                    
+                    conn.on('data', (data) => handlePartyData(data, conn));
+                    
+                    conn.on('close', () => {
+                        watchParty.connections = watchParty.connections.filter(c => c !== conn);
+                        broadcastPartyData({ type: 'user_left', id: conn.peer });
+                        removePartyUser(conn.peer);
+                    });
+                });
+            });
+            
+            watchParty.peer.on('error', (err) => {
+                console.error(err);
+                if (err.type === 'unavailable-id') {
+                    generatePartyCode(); // Retry
+                } else {
+                    showToast('Error creating party. Try again.');
+                }
+            });
             
             return code;
         }
@@ -3173,7 +3194,6 @@
         function showJoinPartyModal() {
             document.getElementById('joinPartyModal').classList.add('active');
             document.getElementById('joinPartyInput').focus();
-            // Close other panels
             document.getElementById('watchPartyPanel').classList.remove('active');
         }
 
@@ -3185,18 +3205,9 @@
         function handleJoinPartyInput(event) {
             const input = document.getElementById('joinPartyInput');
             let value = input.value.toUpperCase();
-            
-            // Filter out invalid characters
             value = value.replace(/[^A-Z2-9]/g, '');
-            
-            // Limit to 6 characters
-            if (value.length > 6) {
-                value = value.substring(0, 6);
-            }
-            
+            if (value.length > 6) value = value.substring(0, 6);
             input.value = value;
-            
-            // Auto-submit on 6 characters
             if (value.length === 6 && event.key !== 'Backspace') {
                 joinPartyFromInput();
             }
@@ -3206,73 +3217,205 @@
             const code = document.getElementById('joinPartyInput').value.toUpperCase();
             if (code.length !== 6) {
                 showToast('Please enter a 6-digit code');
-                document.getElementById('joinPartyInput').focus();
                 return;
             }
-            
             joinParty(code);
             closeJoinPartyModal();
         }
 
-        async function joinParty(code) {
-            if (!code || code.length !== 6) {
-                showToast('Invalid party code');
-                return;
-            }
+        function joinParty(code) {
+            const nameInput = document.getElementById('userNickname');
+            const myName = nameInput.value.trim() || 'Guest';
+
+            if (watchParty.peer) watchParty.peer.destroy();
             
-            // Validate code format
-            const validChars = /^[A-Z2-9]{6}$/;
-            if (!validChars.test(code)) {
-                showToast('Invalid party code format');
-                return;
-            }
+            watchParty.peer = new Peer();
             
-            // Simulate joining (in real app, connect to server)
-            showToast(`Joining party ${code}...`);
+            watchParty.peer.on('open', (id) => {
+                const hostId = 'sids-party-' + code;
+                const conn = watchParty.peer.connect(hostId);
+                
+                conn.on('open', () => {
+                    watchParty.active = true;
+                    watchParty.code = code;
+                    watchParty.isHost = false;
+                    watchParty.conn = conn;
+                    watchParty.users = [{ id: id, name: myName + ' (You)', host: false }];
+                    
+                    updateEnhancedPartyUI();
+                    showToast('Connected to Party!');
+                    document.getElementById('partyChat').style.display = 'block';
+                    
+                    conn.send({ type: 'join', name: myName });
+                });
+                
+                conn.on('data', (data) => handlePartyData(data));
+                
+                conn.on('close', () => {
+                    showToast('Disconnected from party');
+                    leaveParty();
+                });
+                
+                conn.on('error', (err) => {
+                    showToast('Connection error');
+                });
+            });
             
-            // Add a small delay to simulate network request
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            watchParty = {
-                active: true,
-                code: code,
-                users: [
-                    {
-                        id: 'host_' + code,
-                        name: 'Host',
-                        host: true,
-                        joined: Date.now() - 10000
-                    },
-                    {
-                        id: localStorage.getItem('sids_user_id'),
-                        name: 'You',
-                        host: false,
-                        joined: Date.now()
+            watchParty.peer.on('error', (err) => {
+                showToast('Could not connect. Check code.');
+            });
+        }
+        
+        function handlePartyData(data, senderConn) {
+            if (data.type === 'join') {
+                if (watchParty.isHost) {
+                    const newUser = { id: senderConn.peer, name: data.name, host: false };
+                    watchParty.users.push(newUser);
+                    broadcastPartyData({ type: 'update_users', users: watchParty.users });
+                    
+                    // Sync current state
+                    if (typeof curId !== 'undefined') {
+                         senderConn.send({ 
+                             type: 'sync_state', 
+                             contentId: curId, 
+                             contentType: contentType, 
+                             season: typeof currentSeason !== 'undefined' ? currentSeason : 1, 
+                             episode: typeof currentEpisode !== 'undefined' ? currentEpisode : 1 
+                         });
                     }
-                ],
-                host: false,
-                syncInterval: null,
-                lastSyncTime: Date.now(),
-                currentContent: null,
-                lastActivity: Date.now()
-            };
-            
-            localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            updateEnhancedPartyUI();
-            showToast(`Joined party ${code}!`);
-            
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('party', code);
-            window.history.pushState({}, '', url);
-            
-            // Update party count badge
-            updatePartyCount();
-            
-            // Start syncing if not already
-            if (!watchParty.syncInterval) {
-                startPartySync();
+                }
+            } else if (data.type === 'update_users') {
+                watchParty.users = data.users;
+                updateEnhancedPartyUI();
+            } else if (data.type === 'chat') {
+                appendChatMessage(data.user, data.message, false);
+            } else if (data.type === 'sync_state') {
+                // Check if we need to change content
+                if (typeof curId !== 'undefined' && (curId !== data.contentId || contentType !== data.contentType || (contentType === 'tv' && (currentSeason !== data.season || currentEpisode !== data.episode)))) {
+                    showToast('Host changed content. Syncing...');
+                    contentType = data.contentType;
+                    currentSeason = data.season;
+                    currentEpisode = data.episode;
+                    openContent(data.contentId);
+                }
+            } else if (data.type === 'sync_play') {
+                showCountdownToast(data.count);
             }
+        }
+        
+        function broadcastPartyData(data) {
+            if (watchParty.isHost) {
+                watchParty.connections.forEach(conn => conn.send(data));
+                if (data.type === 'update_users') {
+                    watchParty.users = data.users;
+                    updateEnhancedPartyUI();
+                } else if (data.type === 'chat') {
+                    // Chat is echoed locally by sender
+                } else if (data.type === 'sync_play') {
+                    showCountdownToast(data.count);
+                }
+            }
+        }
+
+        function triggerSyncPlay() {
+            if (!watchParty.isHost) return;
+            broadcastPartyData({ type: 'sync_play', count: 3 });
+        }
+
+        function showCountdownToast(count) {
+            if (count > 0) {
+                showToast(`PLAYING IN ${count}...`);
+                setTimeout(() => showCountdownToast(count - 1), 1000);
+            } else {
+                showToast('▶️ PLAY NOW!');
+            }
+        }
+        
+        function startPartySync() {
+            if (watchParty.syncInterval) clearInterval(watchParty.syncInterval);
+            
+            watchParty.syncInterval = setInterval(() => {
+                if (!watchParty.active || !watchParty.isHost) return;
+                
+                // Check for state changes
+                const currentState = {
+                    contentId: typeof curId !== 'undefined' ? curId : null,
+                    contentType: typeof contentType !== 'undefined' ? contentType : 'movie',
+                    season: typeof currentSeason !== 'undefined' ? currentSeason : 1,
+                    episode: typeof currentEpisode !== 'undefined' ? currentEpisode : 1
+                };
+                
+                if (JSON.stringify(currentState) !== JSON.stringify(watchParty.lastSyncState)) {
+                    watchParty.lastSyncState = currentState;
+                    broadcastPartyData({ type: 'sync_state', ...currentState });
+                }
+            }, 2000);
+        }
+        
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            const myName = watchParty.users.find(u => u.id === watchParty.peer.id || (watchParty.isHost && u.host))?.name || 'Me';
+            
+            if (watchParty.isHost) {
+                broadcastPartyData({ type: 'chat', user: myName, message: msg });
+                appendChatMessage(myName, msg, true);
+            } else if (watchParty.conn) {
+                watchParty.conn.send({ type: 'chat', user: myName, message: msg });
+                appendChatMessage(myName, msg, true);
+            }
+            
+            input.value = '';
+        }
+        
+        function appendChatMessage(user, msg, isMe) {
+            const chatBox = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.style.padding = '6px 10px';
+            div.style.borderRadius = '12px';
+            div.style.background = isMe ? 'var(--accent)' : 'var(--surface-light)';
+            div.style.color = isMe ? 'white' : 'var(--text-main)';
+            div.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
+            div.style.maxWidth = '80%';
+            div.style.fontSize = '12px';
+            div.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+            
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            div.innerHTML = `
+                <div style="font-weight: 700; font-size: 10px; opacity: 0.8; margin-bottom: 2px; ${isMe ? 'text-align: right;' : ''}">${user} • ${time}</div>
+                <div style="word-break: break-word; line-height: 1.4;">${msg}</div>
+            `;
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removePartyUser(peerId) {
+            watchParty.users = watchParty.users.filter(u => u.id !== peerId);
+            broadcastPartyData({ type: 'update_users', users: watchParty.users });
+        }
+        
+        function leaveParty() {
+             if (watchParty.peer) watchParty.peer.destroy();
+             watchParty.active = false;
+             watchParty.code = null;
+             watchParty.users = [];
+             watchParty.connections = [];
+             watchParty.conn = null;
+             watchParty.peer = null;
+             
+             if (watchParty.syncInterval) clearInterval(watchParty.syncInterval);
+             
+             updateEnhancedPartyUI();
+             document.getElementById('partyChat').style.display = 'none';
+             showToast('Left party');
+             
+             const url = new URL(window.location);
+             url.searchParams.delete('party');
+             window.history.pushState({}, '', url);
         }
 
         function updateEnhancedPartyUI() {
@@ -3282,16 +3425,33 @@
             const partyStatus = document.getElementById('partyStatus');
             const partyStatusText = document.getElementById('partyStatusText');
             
+            const nameInput = document.getElementById('partyNameInput');
+            const setupButtons = document.getElementById('partySetupButtons');
+            const syncBtn = document.getElementById('syncPlayBtn');
+            
             if (watchParty.active && watchParty.code) {
+                // In Party
+                codeElement.style.display = 'block';
                 codeElement.textContent = watchParty.code;
+                nameInput.style.display = 'none';
+                setupButtons.style.display = 'none';
                 
+                // Show Sync Button if Host
+                if (watchParty.isHost) {
+                    syncBtn.style.display = 'flex';
+                } else {
+                    syncBtn.style.display = 'none';
+                }
+
                 // Render users
                 usersElement.innerHTML = watchParty.users.map(user => `
-                    <div class="party-user ${user.host ? 'party-user-host' : ''}">
-                        <div class="party-user-avatar ${user.host ? 'party-user-host' : ''}">
-                            ${user.name.charAt(0)}
+                    <div class="party-user ${user.host ? 'party-user-host' : ''}" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding: 4px; border-radius: 4px; background: var(--surface-light);">
+                        <div class="party-user-avatar" style="width: 24px; height: 24px; background: ${user.host ? 'var(--accent)' : 'var(--text-secondary)'}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">
+                            ${user.name.charAt(0).toUpperCase()}
                         </div>
-                        ${user.name} ${user.host ? '(Host)' : ''}
+                        <div style="font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${user.name} ${user.host ? '<i class="fas fa-crown" style="color: gold; margin-left: 4px;"></i>' : ''}
+                        </div>
                     </div>
                 `).join('');
                 
@@ -3299,24 +3459,21 @@
                 activeControls.style.display = 'flex';
                 partyStatus.style.display = 'block';
                 
-                // Update status text
-                const timeSince = Math.floor((Date.now() - watchParty.lastActivity) / 1000);
-                if (timeSince < 60) {
-                    partyStatusText.textContent = 'Active now';
-                } else if (timeSince < 3600) {
-                    partyStatusText.textContent = `Active ${Math.floor(timeSince / 60)} minutes ago`;
-                } else {
-                    partyStatusText.textContent = 'Recently active';
-                }
+                partyStatusText.textContent = `${watchParty.users.length} active users`;
+                
             } else {
+                // Not In Party
+                codeElement.style.display = 'none';
                 codeElement.textContent = '----';
+                nameInput.style.display = 'block';
+                setupButtons.style.display = 'block';
+                
                 usersElement.innerHTML = '';
                 activeControls.style.display = 'none';
                 partyStatus.style.display = 'none';
             }
-        }
-
-        function updatePartyCount() {
+            
+            // Update Floating Badge
             const countElement = document.getElementById('partyCount');
             if (watchParty.active && watchParty.users) {
                 countElement.textContent = watchParty.users.length;
@@ -3327,86 +3484,7 @@
             }
         }
 
-        function leaveParty() {
-            if (watchParty.active) {
-                const wasHost = watchParty.host;
-                const partyCode = watchParty.code;
-                
-                // Stop sync interval
-                if (watchParty.syncInterval) {
-                    clearInterval(watchParty.syncInterval);
-                }
-                
-                // Reset watch party
-                watchParty = {
-                    active: false,
-                    code: null,
-                    users: [],
-                    host: false,
-                    syncInterval: null,
-                    lastSyncTime: 0,
-                    peerConnections: {},
-                    dataChannel: null,
-                    lastActivity: Date.now()
-                };
-                
-                // Clear from localStorage
-                localStorage.removeItem('sids_party');
-                
-                // Update UI
-                updateEnhancedPartyUI();
-                updatePartyCount();
-                
-                // Remove party from URL
-                const url = new URL(window.location);
-                url.searchParams.delete('party');
-                window.history.pushState({}, '', url);
-                
-                showToast(`Left party ${partyCode}`);
-                
-                // If host left, show message
-                if (wasHost) {
-                    showToast('Party ended (host left)');
-                }
-            }
-        }
 
-        function startPartySync() {
-            if (watchParty.syncInterval) {
-                clearInterval(watchParty.syncInterval);
-            }
-            
-            // Sync every 10 seconds (optimized for mobile)
-            watchParty.syncInterval = setInterval(() => {
-                if (watchParty.host) {
-                    // Host sends sync data
-                    syncPartyData();
-                } else {
-                    // Client requests sync
-                    requestSync();
-                }
-                
-                // Update last activity
-                watchParty.lastActivity = Date.now();
-                localStorage.setItem('sids_party', JSON.stringify(watchParty));
-                
-                // Update UI
-                updateEnhancedPartyUI();
-            }, 10000);
-        }
-
-        function syncPartyData() {
-            watchParty.lastSyncTime = Date.now();
-            localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            
-            // In a real app, send to server
-            console.log('Syncing party data:', watchParty);
-        }
-
-        function requestSync() {
-            // In a real app, request sync from host
-            console.log('Requesting sync from host');
-        }
 
         function copyPartyCode() {
             if (watchParty.code) {
