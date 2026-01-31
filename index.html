@@ -2315,7 +2315,7 @@
             .billboard-content { left: 16px; right: 16px; max-width: none; }
             .section { padding: 24px 16px; }
             .content-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-            body { padding-bottom: 60px; }
+            body { padding-bottom: 80px; }
             .filter-panel, .history-panel {
                 width: 100%;
                 right: -100%;
@@ -2331,7 +2331,8 @@
                 -webkit-line-clamp: 1;
             }
             .floating-controls {
-                bottom: 70px;
+                bottom: 100px; /* Increased from 70px for better visibility */
+                right: 16px;
             }
         }
 
@@ -2473,7 +2474,7 @@
     </div>
 
     <!-- JOIN PARTY MODAL -->
-    <div class="join-party-modal" id="joinPartyModal">
+    <div class="join-party-modal" id="joinPartyModal" onclick="if(event.target === this) closeJoinPartyModal()">
         <div class="join-party-box">
             <h2 class="join-party-title">Join Watch Party</h2>
             <p style="color: var(--text-dim); margin-bottom: 20px;">Enter the 6-digit party code to join</p>
@@ -3571,16 +3572,7 @@
             });
         }
 
-        // Close panels when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.floating-controls')) {
-                document.getElementById('watchPartyPanel').classList.remove('active');
-                document.getElementById('serverPanel').classList.remove('active');
-            }
-            if (!e.target.closest('.join-party-box') && !e.target.closest('.join-party-btn')) {
-                closeJoinPartyModal();
-            }
-        });
+
 
         async function loadHomePage() {
             await loadTrending();
