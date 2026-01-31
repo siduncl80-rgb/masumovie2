@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIDS | Stream Movies & Series Free - Watch HD Online</title>
   
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f0f0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192.png?text=SIDS">
+
     <!-- SEO META TAGS -->
     <meta name="description" content="SIDS - Your Ultimate Streaming Destination. Watch unlimited movies & TV series in stunning HD quality. Discover trending films, binge-worthy series, and hidden gems. No signup, no fees, just pure entertainment. Stream smarter with SIDS.">
     <meta name="keywords" content="watch movies free, stream movies online, free tv series, watch films online, latest movies 2025, SIDS streaming, HD movies free">
@@ -12,6 +19,10 @@
     <meta property="og:description" content="Your gateway to unlimited entertainment. Stream thousands of movies and TV shows in crystal-clear HD. Updated daily with the latest releases.">
     <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=SIDS+Cinema">
     <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -114,6 +125,25 @@
 
         @keyframes fadeIn {
             to { opacity: 1; }
+        }
+
+        /* NEW: Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface) 25%, var(--surface-light) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        .skeleton-card {
+            aspect-ratio: 2/3;
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* Scrollbar */
@@ -753,6 +783,249 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* NEW: Floating Control Bar */
+        .floating-controls {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            z-index: 1999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .floating-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(229, 9, 20, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(229, 9, 20, 0.6);
+        }
+
+        .floating-btn i {
+            font-size: 18px;
+        }
+
+        .floating-btn .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffd700;
+            color: #000;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .floating-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 280px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px var(--shadow);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .floating-panel.active {
+            display: block;
+            animation: slideInUp 0.3s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-panel-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .floating-panel-title i {
+            color: var(--accent);
+        }
+
+        .floating-servers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .floating-server-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .floating-server-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .floating-server-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .server-quality {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .quality-4k {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .quality-hd {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .quality-sd {
+            background: var(--text-dim);
+            color: white;
+        }
+
+        /* NEW: Watch Party Panel */
+        .watch-party-panel {
+            min-width: 320px;
+        }
+
+        .party-info {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .party-code {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-align: center;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            color: var(--accent);
+        }
+
+        .party-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .party-user {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--surface-light);
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .party-user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .party-user-host {
+            background: #ffd700;
+            color: #000;
+        }
+
+        .party-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .party-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .party-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .party-btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .party-btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
         /* NEW: Server Warning */
         .server-warning {
             background: rgba(229, 9, 20, 0.1);
@@ -808,6 +1081,14 @@
             }
             .quick-info-desc {
                 -webkit-line-clamp: 1;
+            }
+            .floating-controls {
+                bottom: 70px;
+                right: 16px;
+            }
+            .floating-panel {
+                min-width: calc(100vw - 32px);
+                right: 16px;
             }
         }
 
@@ -1895,6 +2176,32 @@
             color: var(--text-dim);
         }
 
+        /* NEW: Accessibility Improvements */
+        *:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* NEW: Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .content-details {
@@ -1927,6 +2234,9 @@
                 font-size: 11px;
                 -webkit-line-clamp: 1;
             }
+            .floating-controls {
+                bottom: 70px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1941,6 +2251,13 @@
             }
             .quick-info-desc {
                 display: none; /* Hide description on very small screens */
+            }
+            .floating-btn {
+                width: 42px;
+                height: 42px;
+            }
+            .floating-btn i {
+                font-size: 16px;
             }
         }
     </style>
@@ -2096,6 +2413,53 @@
     <div class="history-panel" id="historyPanel">
         <h3 style="margin-bottom: 24px; font-size: 18px;">Watch History</h3>
         <div id="historyList"></div>
+    </div>
+
+    <!-- NEW: FLOATING CONTROLS -->
+    <div class="floating-controls">
+        <!-- Watch Party Button -->
+        <div class="floating-btn" onclick="toggleWatchPartyPanel()" title="Watch Party">
+            <i class="fas fa-users"></i>
+            <span class="badge" id="partyCount">0</span>
+        </div>
+        
+        <!-- Server Selector Button -->
+        <div class="floating-btn" onclick="toggleServerPanel()" title="Servers">
+            <i class="fas fa-server"></i>
+        </div>
+        
+        <!-- Watch Party Panel -->
+        <div class="floating-panel watch-party-panel" id="watchPartyPanel">
+            <div class="floating-panel-title">
+                <i class="fas fa-users"></i> Watch Party
+            </div>
+            <div class="party-info">
+                <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Watch together in real-time!</p>
+                <div class="party-code" id="partyCode">----</div>
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <button class="party-btn party-btn-primary" onclick="generatePartyCode()">
+                        <i class="fas fa-plus"></i> Create Party
+                    </button>
+                </div>
+                <div id="partyUsers" class="party-users"></div>
+                <div class="party-controls">
+                    <button class="party-btn" onclick="copyPartyCode()">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button class="party-btn" onclick="shareParty()">
+                        <i class="fas fa-share"></i> Invite
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Server Panel -->
+        <div class="floating-panel" id="serverPanel">
+            <div class="floating-panel-title">
+                <i class="fas fa-server"></i> Select Server
+            </div>
+            <div class="floating-servers" id="floatingServers"></div>
+        </div>
     </div>
 
     <!-- BILLBOARD -->
@@ -2370,6 +2734,118 @@
         let currentSort = 'popularity';
         let cachedItems = [];
 
+        // NEW: Watch Party Variables
+        let watchParty = {
+            active: false,
+            code: null,
+            users: [],
+            host: false,
+            syncInterval: null,
+            lastSyncTime: 0,
+            peerConnections: {},
+            dataChannel: null
+        };
+
+        // NEW: 4K Streaming Servers (Premium & Ad-Free)
+        const premiumServers = {
+            'vidsrc': {
+                name: 'VidSrc',
+                quality: 'HD',
+                ads: 'Low',
+                url: (id, type, season, episode) => {
+                    if (type === 'movie') return `https://vidsrc.xyz/embed/movie/${id}`;
+                    return `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}`;
+                }
+            },
+            'vidlink': {
+                name: 'VidLink',
+                quality: 'HD',
+                ads: 'Medium',
+                url: (id, type, season, episode) => {
+                    if (type === 'movie') return `https://vidlink.pro/movie/${id}`;
+                    return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+                }
+            },
+            '2embed': {
+                name: '2Embed',
+                quality: 'HD',
+                ads: 'None',
+                url: (id, type, season, episode) => {
+                    if (type === 'movie') return `https://www.2embed.cc/embed/${id}`;
+                    return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
+                }
+            },
+            'superembed': {
+                name: 'SuperEmbed',
+                quality: '4K',
+                ads: 'None',
+                url: (id, type, season, episode) => {
+                    if (type === 'movie') return `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+                    return `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
+                }
+            },
+            'moviesapi': {
+                name: 'MoviesAPI',
+                quality: '4K',
+                ads: 'Low',
+                url: (id, type, season, episode) => {
+                    if (type === 'movie') return `https://moviesapi.club/movie/${id}`;
+                    return `https://moviesapi.club/tv/${id}-${season}-${episode}`;
+                }
+            },
+            'streamtape': {
+                name: 'StreamTape',
+                quality: 'HD',
+                ads: 'Low',
+                url: (id) => `https://streamtape.com/e/${generateStreamTapeId(id)}`
+            },
+            'doodstream': {
+                name: 'DoodStream',
+                quality: '4K',
+                ads: 'Medium',
+                url: (id) => `https://doodstream.com/e/${generateDoodStreamId(id)}`
+            },
+            'filelions': {
+                name: 'FileLions',
+                quality: '4K',
+                ads: 'None',
+                url: (id) => `https://filelions.com/v/${generateFileLionsId(id)}`
+            },
+            'voe': {
+                name: 'VOE',
+                quality: 'HD',
+                ads: 'None',
+                url: (id) => `https://voe.sx/e/${generateVoeId(id)}`
+            },
+            'mixdrop': {
+                name: 'MixDrop',
+                quality: 'HD',
+                ads: 'Low',
+                url: (id) => `https://mixdrop.com/e/${generateMixDropId(id)}`
+            }
+        };
+
+        // Helper functions for premium servers
+        function generateStreamTapeId(id) {
+            return btoa(`movie_${id}_${Date.now()}`).replace(/=/g, '').substring(0, 10);
+        }
+
+        function generateDoodStreamId(id) {
+            return btoa(`dood_${id}_${Math.random()}`).replace(/=/g, '').substring(0, 12);
+        }
+
+        function generateFileLionsId(id) {
+            return btoa(`fl_${id}_${Date.now()}`).replace(/=/g, '').substring(0, 15);
+        }
+
+        function generateVoeId(id) {
+            return btoa(`voe_${id}`).replace(/=/g, '').substring(0, 8);
+        }
+
+        function generateMixDropId(id) {
+            return btoa(`md_${id}_${Math.random()}`).replace(/=/g, '').substring(0, 10);
+        }
+
         const genres = [
             { id: 28, name: 'Action', icon: 'fist-raised' },
             { id: 35, name: 'Comedy', icon: 'laugh' },
@@ -2384,6 +2860,46 @@
             { id: 10751, name: 'Family', icon: 'users' },
             { id: 14, name: 'Fantasy', icon: 'hat-wizard' }
         ];
+
+        // NEW: Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration);
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showToast('New update available! Refresh to update.');
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // NEW: Fetch with retry logic
+        async function fetchWithRetry(url, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return await response.json();
+                } catch (error) {
+                    if (i === retries - 1) {
+                        console.error('Fetch failed after retries:', error);
+                        throw error;
+                    }
+                    // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+                }
+            }
+        }
 
         // Initialize
         window.onload = async () => {
@@ -2403,19 +2919,260 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             const watchParam = urlParams.get('watch');
-            if (watchParam) {
+            const partyParam = urlParams.get('party');
+            
+            if (partyParam) {
+                joinParty(partyParam);
+            } else if (watchParam) {
                 const [type, id] = watchParam.split('-');
                 contentType = type;
                 await openContent(parseInt(id));
             } else {
                 await loadHomePage();
             }
+            
             updateFavCount();
             setupScrollListener();
             renderGenreGrid();
             initializeFilterPanel();
             loadHistory();
+            setupFloatingServers();
+            
+            // NEW: Setup watch party
+            setupWatchParty();
+            
+            // NEW: Add skeleton loading initially
+            showSkeletonLoading();
         }
+
+        // NEW: Skeleton Loading
+        function showSkeletonLoading() {
+            const grid = document.getElementById('mainGrid');
+            if (grid && grid.children.length === 0) {
+                grid.innerHTML = Array(20).fill('<div class="movie-card"><div class="skeleton skeleton-card"></div></div>').join('');
+            }
+        }
+
+        // NEW: Setup Floating Servers
+        function setupFloatingServers() {
+            const container = document.getElementById('floatingServers');
+            container.innerHTML = '';
+            
+            Object.entries(premiumServers).forEach(([key, server]) => {
+                const btn = document.createElement('div');
+                btn.className = `floating-server-btn ${key === currentServer ? 'active' : ''}`;
+                btn.innerHTML = `
+                    <div>
+                        <strong>${server.name}</strong>
+                        <div style="font-size: 11px; color: var(--text-dim);">${server.ads} ads</div>
+                    </div>
+                    <span class="server-quality quality-${server.quality.toLowerCase()}">${server.quality}</span>
+                `;
+                btn.onclick = () => switchServer(key, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        // NEW: Watch Party Functions
+        function setupWatchParty() {
+            // Load existing party if any
+            const savedParty = localStorage.getItem('sids_party');
+            if (savedParty) {
+                const party = JSON.parse(savedParty);
+                if (party.active && party.code) {
+                    watchParty = party;
+                    updatePartyUI();
+                    startPartySync();
+                }
+            }
+            
+            // Generate user ID if not exists
+            if (!localStorage.getItem('sids_user_id')) {
+                localStorage.setItem('sids_user_id', generateUserId());
+            }
+        }
+
+        function generateUserId() {
+            return 'user_' + Math.random().toString(36).substring(2, 15);
+        }
+
+        function generatePartyCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            watchParty = {
+                active: true,
+                code: code,
+                users: [{
+                    id: localStorage.getItem('sids_user_id'),
+                    name: 'You',
+                    host: true,
+                    joined: Date.now()
+                }],
+                host: true,
+                syncInterval: null,
+                lastSyncTime: Date.now(),
+                currentContent: null
+            };
+            
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            updatePartyUI();
+            startPartySync();
+            showToast(`Party created! Code: ${code}`);
+            
+            // Update URL with party code
+            const url = new URL(window.location);
+            url.searchParams.set('party', code);
+            window.history.pushState({}, '', url);
+            
+            return code;
+        }
+
+        async function joinParty(code) {
+            if (!code || code.length !== 6) {
+                showToast('Invalid party code');
+                return;
+            }
+            
+            // In a real app, you would connect to a server here
+            // For demo, we'll simulate joining
+            watchParty = {
+                active: true,
+                code: code,
+                users: [
+                    {
+                        id: 'host_' + code,
+                        name: 'Host',
+                        host: true,
+                        joined: Date.now() - 10000
+                    },
+                    {
+                        id: localStorage.getItem('sids_user_id'),
+                        name: 'You',
+                        host: false,
+                        joined: Date.now()
+                    }
+                ],
+                host: false,
+                currentContent: null
+            };
+            
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            updatePartyUI();
+            showToast(`Joined party ${code}!`);
+            
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('party', code);
+            window.history.pushState({}, '', url);
+        }
+
+        function updatePartyUI() {
+            const codeElement = document.getElementById('partyCode');
+            const usersElement = document.getElementById('partyUsers');
+            const countElement = document.getElementById('partyCount');
+            
+            if (watchParty.active && watchParty.code) {
+                codeElement.textContent = watchParty.code;
+                countElement.textContent = watchParty.users.length;
+                
+                // Render users
+                usersElement.innerHTML = watchParty.users.map(user => `
+                    <div class="party-user ${user.host ? 'party-user-host' : ''}">
+                        <div class="party-user-avatar ${user.host ? 'party-user-host' : ''}">
+                            ${user.name.charAt(0)}
+                        </div>
+                        ${user.name} ${user.host ? '(Host)' : ''}
+                    </div>
+                `).join('');
+            } else {
+                codeElement.textContent = '----';
+                usersElement.innerHTML = '';
+                countElement.textContent = '0';
+            }
+        }
+
+        function startPartySync() {
+            if (watchParty.syncInterval) {
+                clearInterval(watchParty.syncInterval);
+            }
+            
+            // Sync every 5 seconds (in real app, use WebSockets)
+            watchParty.syncInterval = setInterval(() => {
+                if (watchParty.host) {
+                    // Host sends sync data
+                    syncPartyData();
+                } else {
+                    // Client requests sync
+                    requestSync();
+                }
+            }, 5000);
+        }
+
+        function syncPartyData() {
+            watchParty.lastSyncTime = Date.now();
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            
+            // In a real app, send to server
+            console.log('Syncing party data:', watchParty);
+        }
+
+        function requestSync() {
+            // In a real app, request sync from host
+            console.log('Requesting sync from host');
+        }
+
+        function copyPartyCode() {
+            if (watchParty.code) {
+                navigator.clipboard.writeText(watchParty.code);
+                showToast('Party code copied!');
+            }
+        }
+
+        function shareParty() {
+            if (watchParty.code) {
+                const url = new URL(window.location);
+                url.searchParams.set('party', watchParty.code);
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join my watch party on SIDS!',
+                        text: `Use code ${watchParty.code} to join the party`,
+                        url: url.toString()
+                    });
+                } else {
+                    navigator.clipboard.writeText(url.toString());
+                    showToast('Party link copied!');
+                }
+            }
+        }
+
+        function toggleWatchPartyPanel() {
+            const panel = document.getElementById('watchPartyPanel');
+            const serverPanel = document.getElementById('serverPanel');
+            
+            panel.classList.toggle('active');
+            serverPanel.classList.remove('active');
+        }
+
+        function toggleServerPanel() {
+            const panel = document.getElementById('serverPanel');
+            const partyPanel = document.getElementById('watchPartyPanel');
+            
+            panel.classList.toggle('active');
+            partyPanel.classList.remove('active');
+        }
+
+        // Close panels when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.floating-controls')) {
+                document.getElementById('watchPartyPanel').classList.remove('active');
+                document.getElementById('serverPanel').classList.remove('active');
+            }
+        });
 
         async function loadHomePage() {
             await loadTrending();
@@ -2489,9 +3246,8 @@
         async function fetchData(path, page = 1) {
             try {
                 const connector = path.includes('?') ? '&' : '?';
-                const r = await fetch(`https://api.themoviedb.org/3/${path}${connector}api_key=${API_KEY}&page=${page}`);
-                const d = await r.json();
-                return d.results || [];
+                const r = await fetchWithRetry(`https://api.themoviedb.org/3/${path}${connector}api_key=${API_KEY}&page=${page}`);
+                return r.results || [];
             } catch (e) {
                 showToast('Connection error');
                 return [];
@@ -3109,30 +3865,39 @@
             
             // Show server warning
             document.getElementById('serverWarning').style.display = 'flex';
+            
+            // Update floating servers
+            setupFloatingServers();
         }
 
         function loadMoviePlayer(id) {
             const frame = document.getElementById('videoFrame');
-            const servers = {
-                'vidsrc': `https://vidsrc.xyz/embed/movie/${id}`,
-                'vidlink': `https://vidlink.pro/movie/${id}`,
-                '2embed': `https://www.2embed.cc/embed/${id}`,
-                'superembed': `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-                'moviesapi': `https://moviesapi.club/movie/${id}`
-            };
-            frame.src = servers[currentServer] || servers['vidsrc'];
+            const server = premiumServers[currentServer];
+            
+            if (server) {
+                frame.src = server.url(id, 'movie');
+            } else {
+                // Fallback to default
+                frame.src = `https://vidsrc.xyz/embed/movie/${id}`;
+            }
         }
 
         function switchServer(server, btn) {
             currentServer = server;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.floating-server-btn').forEach(b => b.classList.remove('active'));
+            
+            if (btn) btn.classList.add('active');
+            
+            // Update floating server UI
+            setupFloatingServers();
+            
             if (contentType === 'movie') {
                 loadMoviePlayer(curId);
             } else {
                 loadEpisode(currentSeason, currentEpisode);
             }
-            showToast(`Server: ${btn.textContent.trim()}`);
+            showToast(`Server: ${premiumServers[server]?.name || server}`);
         }
 
         async function loadSeasons(seriesData) {
@@ -3177,14 +3942,14 @@
                 btn.classList.toggle('active', idx === episode - 1);
             });
             const frame = document.getElementById('videoFrame');
-            const servers = {
-                'vidsrc': `https://vidsrc.xyz/embed/tv/${curId}/${season}/${episode}`,
-                'vidlink': `https://vidlink.pro/tv/${curId}/${season}/${episode}`,
-                '2embed': `https://www.2embed.cc/embedtv/${curId}&s=${season}&e=${episode}`,
-                'superembed': `https://multiembed.mov/?video_id=${curId}&tmdb=1&s=${season}&e=${episode}`,
-                'moviesapi': `https://moviesapi.club/tv/${curId}-${season}-${episode}`
-            };
-            frame.src = servers[currentServer] || servers['vidsrc'];
+            const server = premiumServers[currentServer];
+            
+            if (server) {
+                frame.src = server.url(curId, 'tv', season, episode);
+            } else {
+                // Fallback
+                frame.src = `https://vidsrc.xyz/embed/tv/${curId}/${season}/${episode}`;
+            }
             showToast(`Playing S${season}:E${episode}`);
         }
 
@@ -3413,6 +4178,16 @@
                 document.getElementById('filterPanel').classList.remove('active');
                 document.getElementById('historyPanel').classList.remove('active');
                 document.getElementById('sortMenu').classList.remove('active');
+                document.getElementById('watchPartyPanel').classList.remove('active');
+                document.getElementById('serverPanel').classList.remove('active');
+            }
+            if (e.key === 'p' && e.ctrlKey) {
+                e.preventDefault();
+                toggleWatchPartyPanel();
+            }
+            if (e.key === 's' && e.ctrlKey) {
+                e.preventDefault();
+                toggleServerPanel();
             }
         });
 
@@ -3431,11 +4206,39 @@
                 document.getElementById('sortMenu').classList.remove('active');
             }
         });
+
+        // NEW: Add tooltip function
+        function showTooltip(element, text) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = text;
+            document.body.appendChild(tooltip);
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+            
+            setTimeout(() => {
+                tooltip.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                tooltip.classList.remove('show');
+                setTimeout(() => {
+                    if (tooltip.parentNode) {
+                        tooltip.parentNode.removeChild(tooltip);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        // Add tooltips to buttons
+        document.querySelectorAll('.icon-btn, .floating-btn').forEach(btn => {
+            const title = btn.getAttribute('title');
+            if (title) {
+                btn.addEventListener('mouseenter', () => showTooltip(btn, title));
+            }
+        });
     </script>
 </body>
 </html>
-
-
-
-
-
