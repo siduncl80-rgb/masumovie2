@@ -2805,14 +2805,11 @@
             <div class="server-btn" onclick="switchServer('vidlink', this)">
                 <i class="fas fa-film"></i> VidLink
             </div>
-            <div class="server-btn" onclick="switchServer('2embed', this)">
-                <i class="fas fa-server"></i> 2Embed
-            </div>
             <div class="server-btn" onclick="switchServer('superembed', this)">
-                <i class="fas fa-bolt"></i> SuperEmbed
+                <i class="fas fa-bolt"></i> SuperEmbed (4K)
             </div>
-            <div class="server-btn" onclick="switchServer('moviesapi', this)">
-                <i class="fas fa-database"></i> MoviesAPI
+            <div class="server-btn" onclick="switchServer('2embed', this)">
+                <i class="fas fa-server"></i> 2Embed (No Ads)
             </div>
         </div>
 
@@ -2943,17 +2940,8 @@
                     return `https://vidlink.pro/tv/${id}/${season}/${episode}`;
                 }
             },
-            '2embed': {
-                name: '2Embed',
-                quality: 'HD',
-                ads: 'None',
-                url: (id, type, season, episode) => {
-                    if (type === 'movie') return `https://www.2embed.cc/embed/${id}`;
-                    return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
-                }
-            },
             'superembed': {
-                name: 'SuperEmbed',
+                name: 'SuperEmbed (4K)',
                 quality: '4K',
                 ads: 'None',
                 url: (id, type, season, episode) => {
@@ -2961,67 +2949,16 @@
                     return `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
                 }
             },
-            'moviesapi': {
-                name: 'MoviesAPI',
-                quality: '4K',
-                ads: 'Low',
+            '2embed': {
+                name: '2Embed (No Ads)',
+                quality: 'HD',
+                ads: 'None',
                 url: (id, type, season, episode) => {
-                    if (type === 'movie') return `https://moviesapi.club/movie/${id}`;
-                    return `https://moviesapi.club/tv/${id}-${season}-${episode}`;
+                    if (type === 'movie') return `https://www.2embed.cc/embed/${id}`;
+                    return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
                 }
-            },
-            'streamtape': {
-                name: 'StreamTape',
-                quality: 'HD',
-                ads: 'Low',
-                url: (id) => `https://streamtape.com/e/${generateStreamTapeId(id)}`
-            },
-            'doodstream': {
-                name: 'DoodStream',
-                quality: '4K',
-                ads: 'Medium',
-                url: (id) => `https://doodstream.com/e/${generateDoodStreamId(id)}`
-            },
-            'filelions': {
-                name: 'FileLions',
-                quality: '4K',
-                ads: 'None',
-                url: (id) => `https://filelions.com/v/${generateFileLionsId(id)}`
-            },
-            'voe': {
-                name: 'VOE',
-                quality: 'HD',
-                ads: 'None',
-                url: (id) => `https://voe.sx/e/${generateVoeId(id)}`
-            },
-            'mixdrop': {
-                name: 'MixDrop',
-                quality: 'HD',
-                ads: 'Low',
-                url: (id) => `https://mixdrop.com/e/${generateMixDropId(id)}`
             }
         };
-
-        // Helper functions for premium servers
-        function generateStreamTapeId(id) {
-            return btoa(`movie_${id}_${Date.now()}`).replace(/=/g, '').substring(0, 10);
-        }
-
-        function generateDoodStreamId(id) {
-            return btoa(`dood_${id}_${Math.random()}`).replace(/=/g, '').substring(0, 12);
-        }
-
-        function generateFileLionsId(id) {
-            return btoa(`fl_${id}_${Date.now()}`).replace(/=/g, '').substring(0, 15);
-        }
-
-        function generateVoeId(id) {
-            return btoa(`voe_${id}`).replace(/=/g, '').substring(0, 8);
-        }
-
-        function generateMixDropId(id) {
-            return btoa(`md_${id}_${Math.random()}`).replace(/=/g, '').substring(0, 10);
-        }
 
         const genres = [
             { id: 28, name: 'Action', icon: 'fist-raised' },
