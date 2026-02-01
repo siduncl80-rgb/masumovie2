@@ -1186,6 +1186,19 @@
                 letter-spacing: 6px;
                 padding: 14px;
             }
+            /* Mobile join party modal fixes */
+            .join-party-modal {
+                z-index: 2002 !important;
+                padding: 16px;
+            }
+            .join-party-box {
+                max-width: 90vw;
+                width: 100%;
+            }
+            /* Mobile floating panel fixes */
+            .floating-panel {
+                max-height: 80vh !important;
+            }
         }
 
         .taskbar-items {
@@ -3088,11 +3101,14 @@
         }
 
         function generatePartyCode() {
+            console.log('Generate party code clicked');
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0,1,I,O for clarity
             let code = '';
             for (let i = 0; i < 6; i++) {
                 code += chars.charAt(Math.floor(Math.random() * chars.length));
             }
+            
+            console.log('Generated code:', code);
             
             watchParty = {
                 active: true,
@@ -3390,14 +3406,21 @@
         }
 
         function toggleWatchPartyPanel() {
+            console.log('Toggle watch party panel clicked');
             const panel = document.getElementById('watchPartyPanel');
             const serverPanel = document.getElementById('serverPanel');
+            
+            if (!panel) {
+                console.error('Watch party panel not found!');
+                return;
+            }
             
             panel.classList.toggle('active');
             serverPanel.classList.remove('active');
             
             // Update UI when panel opens
             if (panel.classList.contains('active')) {
+                console.log('Panel opened, updating UI');
                 updateEnhancedPartyUI();
             }
         }
@@ -3455,9 +3478,10 @@
                 document.getElementById('watchPartyPanel').classList.remove('active');
                 document.getElementById('serverPanel').classList.remove('active');
             }
-            if (!e.target.closest('.join-party-modal.active') && !e.target.closest('.party-btn')) {
-                const modal = document.getElementById('joinPartyModal');
-                if (modal && modal.classList.contains('active')) {
+            // Only close modal if clicking on the background overlay, not the box
+            const modal = document.getElementById('joinPartyModal');
+            if (modal && modal.classList.contains('active')) {
+                if (e.target === modal) {
                     closeJoinPartyModal();
                 }
             }
