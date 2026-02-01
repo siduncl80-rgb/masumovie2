@@ -2615,6 +2615,17 @@
                 <div id="partyStatus" style="display: none; margin-top: 12px; padding: 8px; background: rgba(229, 9, 20, 0.1); border-radius: 6px; font-size: 12px; color: var(--text-dim);">
                     <i class="fas fa-info-circle"></i> <span id="partyStatusText"></span>
                 </div>
+                
+                <!-- Party Chat -->
+                <div id="partyChatBox" style="display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+                    <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px;">Party Chat</div>
+                    <div id="partyChatMessages" style="height: 150px; overflow-y: auto; background: var(--bg); border-radius: 4px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                    </div>
+                    <div style="display: flex; gap: 4px;">
+                        <input type="text" id="partyChatInput" placeholder="Send message..." style="flex: 1; padding: 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text-main); font-size: 12px;" onkeypress="if(event.key==='Enter') sendPartyMessage(this.value); this.value=''; return false;">
+                        <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="const input = document.getElementById('partyChatInput'); sendPartyMessage(input.value); input.value='';">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -2899,18 +2910,27 @@
         let currentSort = 'popularity';
         let cachedItems = [];
 
-        // NEW: Watch Party Variables - ENHANCED
+        // NEW: Enhanced Watch Party System with Sync and Chat
         let watchParty = {
             active: false,
             code: null,
-            users: [],
             host: false,
+            hostId: null,
+            users: [],
+            currentVideo: null,
+            playbackState: 'paused', // playing, paused, seeking
+            currentTime: 0,
             syncInterval: null,
-            lastSyncTime: 0,
-            peerConnections: {},
-            dataChannel: null,
-            lastActivity: Date.now()
+            lastSync: 0,
+            messages: [],
+            userId: localStorage.getItem('sids_user_id') || generateUserId()
         };
+
+        function generateUserId() {
+            const id = 'user_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('sids_user_id', id);
+            return id;
+        }
 
         // NEW: 4K Streaming Servers (Premium & Ad-Free)
         const premiumServers = {
@@ -3102,7 +3122,7 @@
 
         function generatePartyCode() {
             console.log('Generate party code clicked');
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0,1,I,O for clarity
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
             for (let i = 0; i < 6; i++) {
                 code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -3113,30 +3133,26 @@
             watchParty = {
                 active: true,
                 code: code,
-                users: [{
-                    id: localStorage.getItem('sids_user_id'),
-                    name: 'You',
-                    host: true,
-                    joined: Date.now()
-                }],
                 host: true,
+                hostId: watchParty.userId,
+                users: [{ id: watchParty.userId, name: 'You', isHost: true, joinedAt: Date.now() }],
+                currentVideo: null,
+                playbackState: 'paused',
+                currentTime: 0,
                 syncInterval: null,
-                lastSyncTime: Date.now(),
-                currentContent: null,
-                lastActivity: Date.now()
+                lastSync: Date.now(),
+                messages: [],
+                userId: watchParty.userId
             };
             
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
-            updateEnhancedPartyUI();
             startPartySync();
+            updateEnhancedPartyUI();
             showToast(`Party created! Code: ${code}`);
             
-            // Update URL with party code
             const url = new URL(window.location);
             url.searchParams.set('party', code);
             window.history.pushState({}, '', url);
-            
-            // Update party count badge
             updatePartyCount();
             
             return code;
@@ -3192,59 +3208,42 @@
                 return;
             }
             
-            // Validate code format
             const validChars = /^[A-Z2-9]{6}$/;
             if (!validChars.test(code)) {
                 showToast('Invalid party code format');
                 return;
             }
             
-            // Simulate joining (in real app, connect to server)
             showToast(`Joining party ${code}...`);
-            
-            // Add a small delay to simulate network request
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             watchParty = {
                 active: true,
                 code: code,
-                users: [
-                    {
-                        id: 'host_' + code,
-                        name: 'Host',
-                        host: true,
-                        joined: Date.now() - 10000
-                    },
-                    {
-                        id: localStorage.getItem('sids_user_id'),
-                        name: 'You',
-                        host: false,
-                        joined: Date.now()
-                    }
-                ],
                 host: false,
+                hostId: null,
+                users: [
+                    { id: 'host_' + code, name: 'Host', isHost: true, joinedAt: Date.now() - 10000 },
+                    { id: watchParty.userId, name: 'You', isHost: false, joinedAt: Date.now() }
+                ],
+                currentVideo: null,
+                playbackState: 'paused',
+                currentTime: 0,
                 syncInterval: null,
-                lastSyncTime: Date.now(),
-                currentContent: null,
-                lastActivity: Date.now()
+                lastSync: Date.now(),
+                messages: [{ user: 'Host', text: 'Party created', timestamp: Date.now() - 10000 }],
+                userId: watchParty.userId
             };
             
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
             updateEnhancedPartyUI();
+            startPartySync();
             showToast(`Joined party ${code}!`);
             
-            // Update URL
             const url = new URL(window.location);
             url.searchParams.set('party', code);
             window.history.pushState({}, '', url);
-            
-            // Update party count badge
             updatePartyCount();
-            
-            // Start syncing if not already
-            if (!watchParty.syncInterval) {
-                startPartySync();
-            }
         }
 
         function updateEnhancedPartyUI() {
@@ -3259,11 +3258,11 @@
                 
                 // Render users
                 usersElement.innerHTML = watchParty.users.map(user => `
-                    <div class="party-user ${user.host ? 'party-user-host' : ''}">
-                        <div class="party-user-avatar ${user.host ? 'party-user-host' : ''}">
+                    <div class="party-user ${user.isHost ? 'party-user-host' : ''}">
+                        <div class="party-user-avatar ${user.isHost ? 'party-user-host' : ''}">
                             ${user.name.charAt(0)}
                         </div>
-                        ${user.name} ${user.host ? '(Host)' : ''}
+                        ${user.name} ${user.isHost ? '(Host)' : ''} ${user.id === watchParty.userId ? '(You)' : ''}
                     </div>
                 `).join('');
                 
@@ -3271,15 +3270,8 @@
                 activeControls.style.display = 'flex';
                 partyStatus.style.display = 'block';
                 
-                // Update status text
-                const timeSince = Math.floor((Date.now() - watchParty.lastActivity) / 1000);
-                if (timeSince < 60) {
-                    partyStatusText.textContent = 'Active now';
-                } else if (timeSince < 3600) {
-                    partyStatusText.textContent = `Active ${Math.floor(timeSince / 60)} minutes ago`;
-                } else {
-                    partyStatusText.textContent = 'Recently active';
-                }
+                // Update status
+                partyStatusText.textContent = `${watchParty.users.length} member${watchParty.users.length > 1 ? 's' : ''} • ${watchParty.playbackState === 'playing' ? '▶ Playing' : '⏸ Paused'}`;
             } else {
                 codeElement.textContent = '----';
                 usersElement.innerHTML = '';
@@ -3301,45 +3293,36 @@
 
         function leaveParty() {
             if (watchParty.active) {
-                const wasHost = watchParty.host;
                 const partyCode = watchParty.code;
                 
-                // Stop sync interval
                 if (watchParty.syncInterval) {
                     clearInterval(watchParty.syncInterval);
                 }
                 
-                // Reset watch party
                 watchParty = {
                     active: false,
                     code: null,
-                    users: [],
                     host: false,
+                    hostId: null,
+                    users: [],
+                    currentVideo: null,
+                    playbackState: 'paused',
+                    currentTime: 0,
                     syncInterval: null,
-                    lastSyncTime: 0,
-                    peerConnections: {},
-                    dataChannel: null,
-                    lastActivity: Date.now()
+                    lastSync: 0,
+                    messages: [],
+                    userId: watchParty.userId
                 };
                 
-                // Clear from localStorage
                 localStorage.removeItem('sids_party');
-                
-                // Update UI
                 updateEnhancedPartyUI();
                 updatePartyCount();
                 
-                // Remove party from URL
                 const url = new URL(window.location);
                 url.searchParams.delete('party');
                 window.history.pushState({}, '', url);
                 
                 showToast(`Left party ${partyCode}`);
-                
-                // If host left, show message
-                if (wasHost) {
-                    showToast('Party ended (host left)');
-                }
             }
         }
 
@@ -3348,36 +3331,90 @@
                 clearInterval(watchParty.syncInterval);
             }
             
-            // Sync every 10 seconds (optimized for mobile)
+            // Sync every 2 seconds for smooth playback
             watchParty.syncInterval = setInterval(() => {
                 if (watchParty.host) {
-                    // Host sends sync data
-                    syncPartyData();
+                    // Host broadcasts playback state
+                    const videoFrame = document.getElementById('videoFrame');
+                    if (videoFrame) {
+                        watchParty.lastSync = Date.now();
+                        localStorage.setItem('sids_party', JSON.stringify(watchParty));
+                    }
                 } else {
-                    // Client requests sync
-                    requestSync();
+                    // Client syncs to host state
+                    syncToHost();
                 }
-                
-                // Update last activity
-                watchParty.lastActivity = Date.now();
-                localStorage.setItem('sids_party', JSON.stringify(watchParty));
-                
-                // Update UI
-                updateEnhancedPartyUI();
-            }, 10000);
+            }, 2000);
         }
 
-        function syncPartyData() {
-            watchParty.lastSyncTime = Date.now();
+        function syncToHost() {
+            // Sync video playback to host's state
+            const videoFrame = document.getElementById('videoFrame');
+            if (videoFrame && watchParty.currentVideo) {
+                // In a real app, this would sync the iframe
+                // For now, store sync data
+                watchParty.lastSync = Date.now();
+                localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            }
+        }
+
+        function hostPlayVideo(id, type) {
+            if (!watchParty.host) {
+                showToast('Only host can control playback');
+                return;
+            }
+            
+            watchParty.currentVideo = { id, type };
+            watchParty.playbackState = 'playing';
+            watchParty.currentTime = 0;
+            watchParty.lastSync = Date.now();
+            
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            updateEnhancedPartyUI();
+            showToast('Broadcasting to party...');
+        }
+
+        function hostPauseVideo() {
+            if (!watchParty.host) return;
+            
+            watchParty.playbackState = 'paused';
+            watchParty.lastSync = Date.now();
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            updateEnhancedPartyUI();
+        }
+
+        function hostResumeVideo() {
+            if (!watchParty.host) return;
+            
+            watchParty.playbackState = 'playing';
+            watchParty.lastSync = Date.now();
+            localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            updateEnhancedPartyUI();
+        }
+
+        function sendPartyMessage(text) {
+            if (!watchParty.active || !text.trim()) return;
+            
+            const message = {
+                user: 'You',
+                text: text.trim(),
+                timestamp: Date.now(),
+                userId: watchParty.userId
+            };
+            
+            watchParty.messages.push(message);
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
             
-            // In a real app, send to server
-            console.log('Syncing party data:', watchParty);
-        }
-
-        function requestSync() {
-            // In a real app, request sync from host
-            console.log('Requesting sync from host');
+            // Update UI
+            const chatBox = document.getElementById('partyChatMessages');
+            if (chatBox) {
+                chatBox.innerHTML += `
+                    <div class="party-message">
+                        <strong>${message.user}:</strong> ${message.text}
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
         }
 
         function copyPartyCode() {
@@ -4189,6 +4226,12 @@
             // Show server warning
             document.getElementById('serverWarning').style.display = 'flex';
             
+            // Sync to party if host
+            if (watchParty.active && watchParty.host) {
+                hostPlayVideo(id, contentType);
+                showToast('Broadcasting to party...');
+            }
+            
             // Update floating servers
             setupFloatingServers();
         }
@@ -4212,7 +4255,6 @@
             
             if (btn) btn.classList.add('active');
             
-            // Update floating server UI
             setupFloatingServers();
             
             if (contentType === 'movie') {
@@ -4220,6 +4262,12 @@
             } else {
                 loadEpisode(currentSeason, currentEpisode);
             }
+            
+            // Sync to party if host
+            if (watchParty.active && watchParty.host) {
+                hostPlayVideo(curId, contentType);
+            }
+            
             showToast(`Server: ${premiumServers[server]?.name || server}`);
         }
 
