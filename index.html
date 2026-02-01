@@ -61,6 +61,10 @@
             box-sizing: border-box; 
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
@@ -163,17 +167,21 @@
             right: 0;
             z-index: 1000;
             padding: 0 4%;
-            height: 64px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(15, 15, 15, 1) 0%, rgba(15, 15, 15, 0) 100%);
-            transition: all 0.3s ease;
+            background: linear-gradient(180deg, rgba(15, 15, 15, 0.9) 0%, rgba(15, 15, 15, 0) 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         header.scrolled {
-            background: var(--bg);
-            box-shadow: 0 2px 8px var(--shadow);
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: 64px;
         }
 
         .logo-container {
@@ -185,10 +193,13 @@
 
         .logo-text {
             font-size: 28px;
-            font-weight: 800;
-            color: var(--accent);
+            font-weight: 900;
+            background: linear-gradient(45deg, #e50914, #ff5f6d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             letter-spacing: -1px;
             transition: transform 0.3s ease;
+            text-shadow: 0 2px 10px rgba(229, 9, 20, 0.3);
         }
 
         .logo-text:hover {
@@ -198,7 +209,12 @@
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
         }
 
         .nav-item {
@@ -206,12 +222,76 @@
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
-            transition: color 0.3s ease;
-            position: relative;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
         }
 
-        .nav-item:hover, .nav-item.active {
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-main);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+        }
+
+        /* NEW: Mobile Navigation Menu */
+        .mobile-nav-menu {
+            display: none;
+            position: fixed;
+            top: 52px;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 999;
+            max-height: calc(100vh - 52px);
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+
+        .mobile-nav-menu.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-nav-item {
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .mobile-nav-item:hover,
+        .mobile-nav-item.active {
+            background: var(--surface-light);
+            color: var(--text-main);
+            border-left-color: var(--accent);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            width: 36px;
+            height: 36px;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 6px;
+            font-size: 18px;
+        }
+
+        .mobile-menu-toggle.active {
+            color: var(--accent);
         }
 
         .nav-actions {
@@ -303,11 +383,11 @@
         }
 
         .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            background: transparent;
-            border: 1px solid var(--border);
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             color: var(--text-secondary);
             display: flex;
             align-items: center;
@@ -315,9 +395,21 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            padding: 0;
+            min-width: 44px;
+            min-height: 44px;
+            font-size: 16px;
         }
 
         .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            transform: scale(1.05);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
             background: var(--surface);
             color: var(--text-main);
         }
@@ -337,20 +429,32 @@
         }
 
         .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            background: transparent;
-            border: 1px solid var(--border);
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             color: var(--text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 16px;
+            min-width: 44px;
+            min-height: 44px;
+            padding: 0;
         }
 
         .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            transform: rotate(20deg);
+        }
+
+        .theme-toggle:active {
+            transform: rotate(10deg);
+        }
             background: var(--surface);
             color: var(--text-main);
         }
@@ -361,19 +465,129 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
             padding: 16px 12px;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
-            z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 21;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            pointer-events: auto;
         }
 
         .movie-card:hover .quick-info-tab {
             transform: translateY(0);
         }
 
-        .quick-info-header {
+        /* Small Info Popup on Tap */
+        .movie-info-popup {
+            position: fixed;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            min-width: 280px;
+            max-width: 320px;
+            z-index: 9999;
+            box-shadow: 0 8px 32px var(--shadow);
+            backdrop-filter: blur(10px);
+            animation: popupSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        .movie-info-popup.active {
+            display: block;
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .popup-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .popup-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .popup-rating-star {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .popup-meta {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 40px;
+        }
+
+        .popup-watch-btn {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
+        }
+
+        .popup-watch-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .popup-fav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .popup-fav-btn:hover {
+            background: rgba(229, 9, 20, 0.2);
+            color: var(--accent);
+        }
+
+        .popup-fav-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
             display: flex;
             align-items: center;
             gap: 8px;
@@ -381,49 +595,52 @@
         }
 
         .quick-info-rating {
-            background: rgba(255, 215, 0, 0.9);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #000;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 4px;
+            box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
         }
 
         .quick-info-title {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 900;
             color: var(--text-main);
             margin-bottom: 6px;
             line-height: 1.2;
             display: -webkit-box;
-            -webkit-line-clamp: 1;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .quick-info-subtitle {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-dim);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-wrap: wrap;
         }
 
         .quick-info-subtitle span {
             display: flex;
             align-items: center;
             gap: 3px;
+            white-space: nowrap;
         }
 
         .quick-info-desc {
             font-size: 12px;
             color: var(--text-secondary);
             line-height: 1.4;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -433,19 +650,23 @@
         .quick-info-actions {
             display: flex;
             gap: 8px;
+            margin-top: 10px;
         }
 
         .quick-info-btn {
-            height: 32px;
-            border-radius: 4px;
+            height: 36px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: none;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 36px;
         }
 
         .quick-play-btn {
@@ -453,27 +674,37 @@
             color: white;
             flex: 1;
             padding: 0 12px;
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
         }
 
         .quick-play-btn:hover {
             background: var(--accent-hover);
-            transform: scale(1.02);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+        }
+
+        .quick-play-btn:active {
+            transform: scale(0.98);
         }
 
         .quick-fav-btn {
-            width: 32px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
+            width: 36px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .quick-fav-btn:hover {
-            background: rgba(229, 9, 20, 0.2);
+            background: rgba(229, 9, 20, 0.3);
             color: var(--accent);
+            transform: scale(1.1);
         }
 
         .quick-fav-btn.active {
             background: var(--accent);
             color: white;
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
         }
 
         /* Mobile Search */
@@ -756,21 +987,34 @@
             justify-content: center;
             gap: 8px;
             padding: 12px 24px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
+            min-height: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-primary {
             background: var(--accent);
             color: white;
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.2);
         }
 
         .btn-primary:hover {
             background: var(--accent-hover);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
         }
 
         .btn-secondary {
@@ -1304,65 +1548,88 @@
 
         .movie-card {
             position: relative;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             background: var(--surface);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .movie-card:hover {
-            transform: scale(1.05);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(229, 9, 20, 0.2);
             z-index: 10;
+        }
+
+        .movie-card:active {
+            transform: translateY(-4px);
         }
 
         .movie-card .poster {
             position: relative;
             aspect-ratio: 2/3;
             overflow: hidden;
+            background: var(--surface-light);
+            border-radius: 8px;
+            flex-shrink: 0;
         }
 
         .movie-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.08);
         }
 
         .poster-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            background: rgba(0, 0, 0, 0.6);
             opacity: 0;
             transition: opacity 0.3s ease;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            padding: 16px;
+            cursor: pointer;
+            z-index: 2;
+            border-radius: 8px;
+            pointer-events: none;
         }
 
         .movie-card:hover .poster-overlay {
             opacity: 1;
+            pointer-events: auto;
+        }
+
+        .quick-info-actions button {
+            pointer-events: auto;
         }
 
         .play-icon {
-            width: 48px;
-            height: 48px;
+            width: 60px;
+            height: 60px;
             background: var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 28px;
             color: white;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
+            transform: scale(0.8);
             transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
         }
 
         .movie-card:hover .play-icon {
-            transform: translate(-50%, -50%) scale(1);
+            transform: scale(1);
         }
 
         .card-badges {
@@ -1371,16 +1638,18 @@
             left: 8px;
             right: 8px;
             display: flex;
-            justify-content: space-between;
+            gap: 6px;
             z-index: 5;
         }
 
         .badge {
             padding: 4px 8px;
-            border-radius: 3px;
+            border-radius: 4px;
             font-size: 11px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            backdrop-filter: blur(8px);
         }
 
         .badge-rating {
@@ -1429,16 +1698,21 @@
         .card-info {
             padding: 12px;
             background: var(--surface);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .card-title {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-main);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            line-height: 1.3;
         }
 
         .card-meta {
@@ -2298,7 +2572,7 @@
             opacity: 1;
         }
 
-        /* Responsive */
+        /* Responsive - Enhanced Mobile Optimization */
         @media (max-width: 1024px) {
             .content-details {
                 grid-template-columns: 1fr;
@@ -2306,63 +2580,857 @@
             .detail-poster {
                 max-width: 200px;
             }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .movie-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .movie-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 8px 24px var(--shadow);
+            }
         }
 
         @media (max-width: 768px) {
-            header { padding: 0 16px; }
-            .search-box { display: none; }
-            .billboard { height: 60vh; min-height: 400px; }
-            .billboard-content { left: 16px; right: 16px; max-width: none; }
-            .section { padding: 24px 16px; }
-            .content-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-            body { padding-bottom: 80px; }
+            header { 
+                padding: 0 12px; 
+                height: 60px;
+            }
+            header.scrolled {
+                height: 60px;
+            }
+            .nav-menu {
+                display: none;
+            }
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            .search-box { 
+                display: none !important;
+            }
+            .nav-actions {
+                gap: 8px;
+            }
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .billboard { 
+                height: 55vh; 
+                min-height: 350px; 
+            }
+            .billboard-content { 
+                left: 12px; 
+                right: 12px; 
+                max-width: none;
+                bottom: 20px;
+            }
+            .billboard-title {
+                font-size: 24px;
+                line-height: 1.2;
+            }
+            .billboard-desc {
+                font-size: 13px;
+                display: none;
+            }
+            .billboard-actions {
+                gap: 8px;
+                flex-direction: row;
+            }
+            .billboard-actions .btn {
+                flex: 1;
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+            .section { 
+                padding: 20px 12px; 
+            }
+            .content-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+                gap: 10px; 
+            }
+            .movie-card {
+                border-radius: 6px;
+            }
+            .poster {
+                border-radius: 6px;
+            }
+            body { 
+                padding-bottom: 60px; 
+            }
             .filter-panel, .history-panel {
                 width: 100%;
                 right: -100%;
+                height: calc(100vh - 60px);
+                top: 60px;
+            }
+            .page-container {
+                padding: 60px 12px 40px;
             }
             .logo-animation-text {
                 font-size: 48px;
             }
             .quick-info-tab {
                 padding: 10px;
-            }
-            .quick-info-desc {
-                font-size: 11px;
-                -webkit-line-clamp: 1;
-            }
-            .floating-controls {
-                bottom: 120px;
-                right: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .billboard-actions { flex-direction: column; width: 100%; }
-            .btn { width: 100%; }
-            .quick-info-tab {
-                display: block; /* Keep it visible */
-                padding: 8px;
+                bottom: 5px;
             }
             .quick-info-title {
                 font-size: 13px;
             }
             .quick-info-desc {
-                display: none; /* Hide description on very small screens */
+                font-size: 11px;
+                -webkit-line-clamp: 1;
+                display: none;
+            }
+            .quick-info-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .quick-play-btn,
+            .quick-fav-btn {
+                height: 28px;
+                font-size: 11px;
+                padding: 0 8px;
+            }
+            .floating-controls {
+                bottom: 100px;
+                right: 12px;
+                gap: 10px;
             }
             .floating-btn {
-                width: 42px;
-                height: 42px;
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
             }
-            .floating-btn i {
+            .detail-info h1 {
+                font-size: 22px;
+            }
+            .detail-meta {
+                font-size: 12px;
+                gap: 12px;
+            }
+            .detail-desc {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+            .genre-tag {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .season-tabs {
+                gap: 6px;
+            }
+            .season-tab {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            .episode-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 6px;
+            }
+            .episode-btn {
+                padding: 10px;
+                font-size: 12px;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .top10-card {
+                height: auto;
+            }
+            .top10-number {
+                font-size: 80px;
+            }
+            .continue-card {
+                flex: 0 0 260px;
+            }
+            .genre-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+            .stream-container {
+                padding: 60px 12px 40px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 0 10px;
+                height: 56px;
+            }
+            header.scrolled {
+                height: 56px;
+            }
+            .logo-text {
+                font-size: 22px;
+            }
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            .badge {
+                font-size: 9px;
+                padding: 2px 4px;
+                min-width: 16px;
+            }
+            .billboard {
+                height: 50vh;
+                min-height: 300px;
+            }
+            .billboard-content {
+                left: 10px;
+                right: 10px;
+                bottom: 15px;
+            }
+            .billboard-title {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+            .billboard-meta {
+                gap: 8px;
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+            .billboard-actions .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            .billboard-actions .btn i {
+                font-size: 14px;
+            }
+            .quick-nav {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                padding: 12px 10px;
+            }
+            .quick-chip {
+                padding: 8px;
+                font-size: 12px;
+            }
+            .section {
+                padding: 16px 10px;
+            }
+            .page-container {
+                padding: 56px 10px 40px;
+            }
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+            .page-title {
+                font-size: 24px;
+            }
+            .movie-card {
+                min-width: 100px;
+            }
+            .card-title {
+                font-size: 12px;
+            }
+            .card-meta {
+                font-size: 10px;
+            }
+            .card-badges {
+                gap: 4px;
+            }
+            .badge {
+                font-size: 9px;
+                padding: 2px 4px;
+            }
+            .quick-info-header {
+                margin-bottom: 6px;
+            }
+            .quick-info-rating {
+                font-size: 10px;
+                padding: 2px 5px;
+            }
+            .quick-info-subtitle {
+                font-size: 10px;
+                gap: 4px;
+            }
+            .quick-play-btn,
+            .quick-fav-btn {
+                height: 26px;
+                font-size: 10px;
+                padding: 0 6px;
+            }
+            .floating-controls {
+                bottom: 80px;
+                right: 10px;
+            }
+            .floating-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .scroll-top-btn {
+                width: 40px;
+                height: 40px;
+                bottom: 90px;
+                right: 10px;
+            }
+            .toast {
+                bottom: 70px;
+                right: 10px;
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+            .content-details {
+                padding: 16px;
+                gap: 16px;
+                grid-template-columns: 150px 1fr;
+            }
+            .detail-poster {
+                max-width: 150px;
+            }
+            .detail-info h1 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            .detail-meta {
+                font-size: 11px;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+            .detail-desc {
+                font-size: 13px;
+            }
+            .episodes-container {
+                padding: 16px;
+            }
+            .season-tabs {
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            .season-tab {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            .episode-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+                gap: 6px;
+            }
+            .episode-btn {
+                padding: 8px;
+                font-size: 11px;
+            }
+            .back-btn {
+                font-size: 12px;
+                padding: 6px 12px;
+                margin-bottom: 16px;
+            }
+            .player-container {
+                border-radius: 6px;
+            }
+            .server-list {
+                flex-direction: column;
+                padding: 12px;
+                gap: 6px;
+            }
+            .server-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            .top10-row,
+            .series-row,
+            .continue-row {
+                gap: 8px;
+                padding: 12px 10px;
+            }
+            .top10-card {
+                gap: 8px;
+            }
+            .top10-number {
+                font-size: 60px;
+                margin-right: -15px;
+            }
+            .top10-poster {
+                width: 110px;
+                height: 165px;
+            }
+            .continue-card {
+                flex: 0 0 240px;
+            }
+            .genre-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+                padding: 12px 10px;
+            }
+            .genre-card {
+                aspect-ratio: 16/10;
+            }
+            .genre-name {
+                font-size: 14px;
+            }
+            .footer {
+                padding: 32px 10px 20px;
+            }
+            .footer-content {
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+            .footer-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            .footer-link,
+            .footer-desc,
+            .contact-item {
+                font-size: 13px;
+            }
+            .footer-bottom {
+                font-size: 12px;
+                padding-top: 16px;
+            }
+            .filter-panel,
+            .history-panel {
+                width: 100%;
+                right: -100%;
+                padding: 16px;
+            }
+            .sort-menu {
+                right: 0;
+                min-width: 160px;
+            }
+            .movie-info-box {
+                max-width: 95%;
+                border-radius: 8px;
+            }
+            .movie-info-content {
+                padding: 20px;
+            }
+            .movie-info-title {
+                font-size: 18px;
+            }
+            .movie-info-meta {
+                gap: 10px;
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+            .movie-info-desc {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            .movie-info-actions {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .movie-info-actions .btn {
+                flex: 0 1 calc(50% - 4px);
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+            .join-party-box {
+                padding: 12px;
+            }
+            .join-party-input {
+                font-size: 16px;
+                letter-spacing: 3px;
+                padding: 10px;
+            }
+            .join-party-label {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            .join-party-btn {
+                padding: 10px;
+                font-size: 13px;
+            }
+            .social-links {
+                gap: 8px;
+            }
+            .social-link {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 0 8px;
+                height: 52px;
+            }
+            header.scrolled {
+                height: 52px;
+            }
+            .logo-container {
+                gap: 8px;
+            }
+            .logo-text {
+                font-size: 18px;
+                letter-spacing: -2px;
+            }
+            .icon-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .nav-actions {
+                gap: 4px;
+            }
+            body {
+                padding-bottom: 50px;
+            }
+            .floating-controls {
+                bottom: 70px;
+                right: 8px;
+                gap: 8px;
+            }
+            .floating-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+            .scroll-top-btn {
+                width: 38px;
+                height: 38px;
+                bottom: 80px;
+                right: 8px;
+            }
+            .toast {
+                bottom: 60px;
+                right: 8px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            .toast i {
+                font-size: 14px;
+            }
+            .billboard {
+                height: 45vh;
+                min-height: 250px;
+            }
+            .billboard-content {
+                left: 8px;
+                right: 8px;
+                bottom: 12px;
+            }
+            .billboard-title {
+                font-size: 18px;
+            }
+            .billboard-meta {
+                font-size: 10px;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .billboard-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+            }
+            .billboard-actions .btn {
+                width: 100%;
+                padding: 8px;
+                font-size: 11px;
+            }
+            .quick-nav {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                padding: 8px;
+            }
+            .quick-chip {
+                padding: 6px;
+                font-size: 11px;
+            }
+            .section {
+                padding: 12px 8px;
+            }
+            .page-container {
+                padding: 52px 8px 40px;
+            }
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 6px;
+            }
+            .page-title {
+                font-size: 20px;
+            }
+            .movie-card {
+                min-width: 90px;
+            }
+            .card-title {
+                font-size: 11px;
+            }
+            .card-meta {
+                font-size: 9px;
+            }
+            .quick-info-tab {
+                padding: 8px;
+            }
+            .quick-info-title {
+                font-size: 12px;
+            }
+            .quick-info-header {
+                margin-bottom: 4px;
+            }
+            .quick-info-rating {
+                font-size: 9px;
+                padding: 2px 4px;
+            }
+            .quick-info-subtitle {
+                font-size: 9px;
+                gap: 3px;
+            }
+            .quick-info-subtitle span {
+                gap: 2px;
+            }
+            .quick-play-btn {
+                flex: 1;
+                height: 24px;
+                font-size: 9px;
+                padding: 0 6px;
+            }
+            .quick-fav-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 9px;
+            }
+            .content-details {
+                grid-template-columns: 120px 1fr;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 6px;
+            }
+            .detail-poster {
+                max-width: 120px;
+                border-radius: 4px;
+            }
+            .detail-info h1 {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+            .detail-meta {
+                font-size: 10px;
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+            .detail-desc {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            .detail-genres {
+                margin-top: 12px;
+            }
+            .genre-tag {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+            .episodes-container {
+                padding: 12px;
+                margin-top: 16px;
+                border-radius: 6px;
+            }
+            .season-tabs {
+                gap: 4px;
+                margin-bottom: 10px;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+            .season-tab {
+                padding: 5px 10px;
+                font-size: 10px;
+                white-space: nowrap;
+            }
+            .episode-grid {
+                grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+                gap: 4px;
+            }
+            .episode-btn {
+                padding: 6px;
+                font-size: 10px;
+            }
+            .back-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+                margin-bottom: 12px;
+            }
+            .player-container {
+                border-radius: 4px;
+            }
+            .server-list {
+                flex-direction: column;
+                padding: 8px;
+                gap: 6px;
+            }
+            .server-btn {
+                width: 100%;
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+            .top10-row {
+                padding: 8px;
+                gap: 6px;
+            }
+            .top10-card {
+                gap: 6px;
+            }
+            .top10-number {
+                font-size: 50px;
+                margin-right: -10px;
+            }
+            .top10-poster {
+                width: 100px;
+                height: 150px;
+            }
+            .continue-row,
+            .series-row {
+                padding: 8px;
+                gap: 6px;
+            }
+            .continue-card {
+                flex: 0 0 220px;
+            }
+            .continue-backdrop {
+                aspect-ratio: 16/9;
+            }
+            .continue-info {
+                padding: 8px;
+            }
+            .continue-title {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            .genre-grid {
+                grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+                gap: 6px;
+                padding: 8px;
+            }
+            .genre-card {
+                aspect-ratio: 16/10;
+                border-radius: 4px;
+            }
+            .genre-name {
+                font-size: 12px;
+            }
+            .footer {
+                padding: 24px 8px 16px;
+            }
+            .footer-content {
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+            .footer-brand .logo-text {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+            .footer-title {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            .footer-link,
+            .footer-desc,
+            .contact-item {
+                font-size: 11px;
+            }
+            .social-links {
+                gap: 6px;
+            }
+            .social-link {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+            .footer-bottom {
+                font-size: 10px;
+                padding-top: 12px;
+            }
+            .filter-panel,
+            .history-panel {
+                width: 100%;
+                right: -100%;
+                padding: 12px;
+            }
+            .filter-section {
+                margin-bottom: 16px;
+            }
+            .filter-section-title {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+            .filter-option {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            .sort-menu {
+                right: 0;
+                min-width: 140px;
+            }
+            .sort-option {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            .movie-info-overlay {
+                padding: 10px;
+            }
+            .movie-info-box {
+                max-width: 100%;
+                border-radius: 6px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .movie-info-backdrop {
+                height: 180px;
+            }
+            .movie-info-content {
+                padding: 16px;
+            }
+            .movie-info-title {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            .movie-info-meta {
+                gap: 8px;
+                font-size: 10px;
+                margin-bottom: 10px;
+            }
+            .movie-info-desc {
+                font-size: 11px;
+                line-height: 1.4;
+                max-height: 100px;
+                overflow-y: auto;
+            }
+            .movie-info-actions {
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .movie-info-actions .btn {
+                flex: 0 1 calc(50% - 3px);
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+            .trailer-modal {
+                padding: 10px;
+            }
+            .trailer-container {
+                max-width: 100%;
+            }
+            .trailer-close {
+                width: 32px;
+                height: 32px;
                 font-size: 16px;
             }
             .join-party-box {
-                padding: 16px;
+                padding: 10px;
+            }
+            .join-party-label {
+                font-size: 11px;
+                margin-bottom: 6px;
             }
             .join-party-input {
-                font-size: 18px;
-                letter-spacing: 4px;
-                padding: 12px;
+                font-size: 14px;
+                letter-spacing: 2px;
+                padding: 8px;
+                min-height: 40px;
+            }
+            .join-party-btn {
+                padding: 8px;
+                font-size: 12px;
             }
         }
     </style>
@@ -2415,7 +3483,21 @@
                 <i class="fas fa-moon" id="themeIcon"></i>
             </div>
         </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" title="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
     </header>
+
+    <!-- Mobile Navigation Menu -->
+    <nav class="mobile-nav-menu" id="mobileNavMenu">
+        <div class="mobile-nav-item active" onclick="goHome()"><i class="fas fa-home"></i> Home</div>
+        <div class="mobile-nav-item" onclick="switchContentType('movie')"><i class="fas fa-film"></i> Movies</div>
+        <div class="mobile-nav-item" onclick="switchContentType('tv')"><i class="fas fa-tv"></i> TV Shows</div>
+        <div class="mobile-nav-item" onclick="switchContentType('anime')"><i class="fas fa-wand-magic-sparkles"></i> Anime</div>
+        <div class="mobile-nav-item" onclick="showPage('favorites')"><i class="fas fa-heart"></i> My List</div>
+    </nav>
 
     <!-- MOBILE SEARCH -->
     <div class="mobile-search-modal" id="mobileSearchModal">
@@ -2786,7 +3868,7 @@
         </div>
 
         <div class="player-container">
-            <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
         </div>
 
         <!-- NEW: Server Warning -->
@@ -3582,7 +4664,7 @@
             document.getElementById('watchPartyPanel').classList.remove('active');
             document.getElementById('serverPanel').classList.remove('active');
             
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function fetchData(path, page = 1) {
@@ -3596,7 +4678,7 @@
             }
         }
 
-        async function loadTrending(btn) {
+        async function loadTrending(btn, shouldScroll = false) {
             if (btn) highlightQuickChip(btn);
             curPage = 1;
             curPath = `trending/${contentType}/week`;
@@ -3607,6 +4689,7 @@
             renderGrid('mainGrid', items);
             document.getElementById('gridTitle').textContent = 'Trending Now';
             showPage('home');
+            if (shouldScroll) scrollToGrid();
         }
 
         async function loadTop10() {
@@ -3642,6 +4725,7 @@
             const genreName = genres.find(g => g.id === id)?.name || 'Genre';
             document.getElementById('gridTitle').textContent = genreName;
             renderGrid('mainGrid', items);
+            showPage('home');
             scrollToGrid();
         }
 
@@ -3653,6 +4737,7 @@
             cachedItems = items;
             document.getElementById('gridTitle').textContent = 'Top Rated';
             renderGrid('mainGrid', items);
+            showPage('home');
             scrollToGrid();
         }
 
@@ -3664,6 +4749,7 @@
             cachedItems = items;
             document.getElementById('gridTitle').textContent = `${year} Releases`;
             renderGrid('mainGrid', items);
+            showPage('home');
             scrollToGrid();
         }
 
@@ -3978,7 +5064,7 @@
                 showToast('Loading Anime...');
             } else {
                 contentType = type;
-                loadTrending();
+                loadTrending(null, true);
                 showToast(`Switched to ${type === 'movie' ? 'Movies' : 'TV Shows'}`);
             }
         }
@@ -4505,6 +5591,131 @@
             const grid = document.getElementById('gridTitle');
             window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
         }
+
+        // NEW: Mobile Menu Handler
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileNavMenu');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (menu) {
+                menu.classList.toggle('active');
+                toggle.classList.toggle('active');
+            }
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobileNavMenu');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (menu) {
+                menu.classList.remove('active');
+                toggle.classList.remove('active');
+            }
+        }
+
+        // NEW: Touch handler for movie cards (show info on tap)
+        function setupCardTouchHandlers() {
+            const cards = document.querySelectorAll('.movie-card');
+            
+            cards.forEach(card => {
+                const poster = card.querySelector('.poster');
+                
+                // Tap poster to show info popup
+                if (poster) {
+                    poster.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        
+                        // Get movie data from card
+                        const title = card.querySelector('.card-title')?.textContent || 'Movie';
+                        const rating = card.querySelector('.badge-rating')?.textContent || 'N/A';
+                        const meta = card.querySelector('.card-meta')?.textContent || '';
+                        
+                        // Create and show popup
+                        showMoviePopup(card, title, rating, meta);
+                    });
+                }
+            });
+            
+            // Close popup when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.movie-info-popup') && !e.target.closest('.poster')) {
+                    const popup = document.querySelector('.movie-info-popup.active');
+                    if (popup) {
+                        popup.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        function showMoviePopup(card, title, rating, meta) {
+            let popup = document.querySelector('.movie-info-popup');
+            
+            // Create popup if it doesn't exist
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.className = 'movie-info-popup';
+                document.body.appendChild(popup);
+            }
+            
+            // Extract rating number
+            const ratingNum = rating.replace(/[^\d.]/g, '') || 'N/A';
+            
+            // Get current movie data
+            const cardData = {
+                id: card.dataset.id || card.querySelector('.fav-btn')?.onclick?.toString().match(/\d+/)?.[0] || 0,
+                title: title,
+                rating: ratingNum,
+                meta: meta
+            };
+            
+            // Build popup HTML
+            popup.innerHTML = `
+                <div class="popup-title">${title}</div>
+                <div class="popup-rating">
+                    <span class="popup-rating-star">⭐ ${ratingNum}</span>
+                </div>
+                <div class="popup-meta">${meta}</div>
+                <div class="popup-buttons">
+                    <button class="popup-btn popup-watch-btn" onclick="event.stopPropagation(); openContent(${cardData.id}); document.querySelector('.movie-info-popup').classList.remove('active');">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                    <button class="popup-btn popup-fav-btn" onclick="event.stopPropagation(); toggleFavPopup(this, '${title}');">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Position popup near cursor/touch point
+            const rect = card.getBoundingClientRect();
+            popup.style.top = (rect.top + window.scrollY) + 'px';
+            popup.style.left = (rect.left + window.scrollX) + 'px';
+            
+            // Show popup
+            popup.classList.add('active');
+        }
+
+        function toggleFavPopup(btn, title) {
+            btn.classList.toggle('active');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', setupCardTouchHandlers);
+        document.addEventListener('DOMContentLoaded', setupCardTouchHandlers);
+        
+        // Re-initialize when grid is updated
+        const originalRenderGrid = window.renderGrid;
+        window.renderGrid = function(...args) {
+            originalRenderGrid.apply(this, args);
+            setupCardTouchHandlers();
+        };
+
+        // Close mobile menu on navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+            mobileNavItems.forEach(item => {
+                item.addEventListener('click', closeMobileMenu);
+            });
+            
+            setupCardTouchHandlers();
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
