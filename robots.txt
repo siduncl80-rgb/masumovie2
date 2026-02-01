@@ -1,4 +1,3 @@
 User-agent: *
-Allow: /
-
-Sitemap: https://www.masumovie.xyz/sitemap.xml
+Disallow:
+Sitemap: https://masumovie.xyz/sitemap.xml
