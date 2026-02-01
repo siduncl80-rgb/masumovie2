@@ -1036,6 +1036,20 @@
             background: #ff0000;
         }
 
+        .party-message {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            background: var(--surface-light);
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .party-message strong {
+            color: var(--accent);
+        }
+
         /* NEW: Join Party Modal */
         .join-party-modal {
             position: fixed;
@@ -3093,12 +3107,15 @@
                 try {
                     const party = JSON.parse(savedParty);
                     // Check if party is still valid (within 24 hours)
-                    if (party.active && party.code && (Date.now() - party.lastActivity < 24 * 60 * 60 * 1000)) {
+                    const lastSync = party.lastSync || Date.now();
+                    if (party.active && party.code && (Date.now() - lastSync < 24 * 60 * 60 * 1000)) {
                         watchParty = party;
+                        console.log('Restored party:', watchParty.code);
                         updateEnhancedPartyUI();
                         startPartySync();
                     } else {
                         // Party expired, clear it
+                        console.log('Party expired');
                         localStorage.removeItem('sids_party');
                     }
                 } catch (e) {
@@ -3109,7 +3126,11 @@
             
             // Generate user ID if not exists
             if (!localStorage.getItem('sids_user_id')) {
-                localStorage.setItem('sids_user_id', generateUserId());
+                const userId = generateUserId();
+                watchParty.userId = userId;
+                localStorage.setItem('sids_user_id', userId);
+            } else {
+                watchParty.userId = localStorage.getItem('sids_user_id');
             }
             
             // Update floating button badge
@@ -3252,6 +3273,8 @@
             const activeControls = document.getElementById('activePartyControls');
             const partyStatus = document.getElementById('partyStatus');
             const partyStatusText = document.getElementById('partyStatusText');
+            const chatBox = document.getElementById('partyChatBox');
+            const chatMessages = document.getElementById('partyChatMessages');
             
             if (watchParty.active && watchParty.code) {
                 codeElement.textContent = watchParty.code;
@@ -3266,17 +3289,29 @@
                     </div>
                 `).join('');
                 
-                // Show active controls
+                // Show active controls and chat
                 activeControls.style.display = 'flex';
                 partyStatus.style.display = 'block';
+                if (chatBox) chatBox.style.display = 'block';
                 
                 // Update status
                 partyStatusText.textContent = `${watchParty.users.length} member${watchParty.users.length > 1 ? 's' : ''} • ${watchParty.playbackState === 'playing' ? '▶ Playing' : '⏸ Paused'}`;
+                
+                // Refresh chat messages
+                if (chatMessages && watchParty.messages) {
+                    chatMessages.innerHTML = watchParty.messages.map(msg => `
+                        <div class="party-message">
+                            <strong>${msg.user}:</strong> ${msg.text}
+                        </div>
+                    `).join('');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             } else {
                 codeElement.textContent = '----';
                 usersElement.innerHTML = '';
                 activeControls.style.display = 'none';
                 partyStatus.style.display = 'none';
+                if (chatBox) chatBox.style.display = 'none';
             }
         }
 
@@ -3333,28 +3368,47 @@
             
             // Sync every 2 seconds for smooth playback
             watchParty.syncInterval = setInterval(() => {
-                if (watchParty.host) {
-                    // Host broadcasts playback state
-                    const videoFrame = document.getElementById('videoFrame');
-                    if (videoFrame) {
+                try {
+                    if (watchParty.host) {
+                        // Host broadcasts playback state
                         watchParty.lastSync = Date.now();
                         localStorage.setItem('sids_party', JSON.stringify(watchParty));
+                    } else {
+                        // Client syncs to host state from localStorage
+                        const savedParty = localStorage.getItem('sids_party');
+                        if (savedParty) {
+                            const hostParty = JSON.parse(savedParty);
+                            // Update current playback state from host
+                            if (hostParty && hostParty.code === watchParty.code) {
+                                watchParty.playbackState = hostParty.playbackState;
+                                watchParty.currentVideo = hostParty.currentVideo;
+                                watchParty.currentTime = hostParty.currentTime;
+                                watchParty.messages = hostParty.messages || [];
+                                // Refresh UI with latest messages
+                                updateEnhancedPartyUI();
+                            }
+                        }
                     }
-                } else {
-                    // Client syncs to host state
-                    syncToHost();
+                } catch (e) {
+                    console.error('Sync error:', e);
                 }
             }, 2000);
         }
 
         function syncToHost() {
             // Sync video playback to host's state
-            const videoFrame = document.getElementById('videoFrame');
-            if (videoFrame && watchParty.currentVideo) {
-                // In a real app, this would sync the iframe
-                // For now, store sync data
-                watchParty.lastSync = Date.now();
-                localStorage.setItem('sids_party', JSON.stringify(watchParty));
+            try {
+                const savedParty = localStorage.getItem('sids_party');
+                if (savedParty) {
+                    const hostParty = JSON.parse(savedParty);
+                    if (hostParty && hostParty.code === watchParty.code) {
+                        watchParty.playbackState = hostParty.playbackState;
+                        watchParty.currentVideo = hostParty.currentVideo;
+                        watchParty.messages = hostParty.messages || [];
+                    }
+                }
+            } catch (e) {
+                console.error('Error syncing to host:', e);
             }
         }
 
@@ -3393,10 +3447,14 @@
         }
 
         function sendPartyMessage(text) {
-            if (!watchParty.active || !text.trim()) return;
+            if (!watchParty.active || !text.trim()) {
+                console.log('Cannot send message - party not active or text empty');
+                return;
+            }
             
+            const userName = watchParty.host ? 'You (Host)' : 'You';
             const message = {
-                user: 'You',
+                user: userName,
                 text: text.trim(),
                 timestamp: Date.now(),
                 userId: watchParty.userId
@@ -3405,16 +3463,9 @@
             watchParty.messages.push(message);
             localStorage.setItem('sids_party', JSON.stringify(watchParty));
             
-            // Update UI
-            const chatBox = document.getElementById('partyChatMessages');
-            if (chatBox) {
-                chatBox.innerHTML += `
-                    <div class="party-message">
-                        <strong>${message.user}:</strong> ${message.text}
-                    </div>
-                `;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
+            // Update UI immediately
+            updateEnhancedPartyUI();
+            console.log('Message sent:', message.text);
         }
 
         function copyPartyCode() {
