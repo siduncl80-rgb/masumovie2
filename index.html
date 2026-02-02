@@ -147,6 +147,69 @@
             100% { background-position: -200% 0; }
         }
 
+        /* Player Controls */
+        .player-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .switch-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .switch-label input {
+            display: none;
+        }
+
+        .switch-slider {
+            width: 36px;
+            height: 20px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .switch-slider::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .switch-label input:checked + .switch-slider {
+            background: var(--accent);
+        }
+
+        .switch-label input:checked + .switch-slider::after {
+            transform: translateX(16px);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -2824,6 +2887,29 @@
             <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
 
+        <div class="player-controls-bar">
+            <div class="control-group">
+                <label class="switch-label">
+                    <input type="checkbox" id="autoNextToggle" onchange="toggleAutoNext()">
+                    <span class="switch-slider"></span>
+                    <span class="label-text">Auto Next</span>
+                </label>
+                <label class="switch-label">
+                    <input type="checkbox" id="autoSkipToggle" onchange="toggleAutoSkip()">
+                    <span class="switch-slider"></span>
+                    <span class="label-text">Auto Skip Intro</span>
+                </label>
+                <label class="switch-label" id="dubToggleContainer" style="display: none; margin-left: 15px;">
+                    <input type="checkbox" id="dubToggle" onchange="toggleDub()">
+                    <span class="switch-slider"></span>
+                    <span class="label-text">Dub</span>
+                </label>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="manualSkip()">
+                <i class="fas fa-forward"></i> Skip Intro
+            </button>
+        </div>
+
         <!-- NEW: Server Warning -->
         <div class="server-warning" id="serverWarning" style="display: none;">
             <i class="fas fa-exclamation-triangle"></i>
@@ -2943,6 +3029,8 @@
         let selectedRating = 0;
         let currentSort = 'popularity';
         let cachedItems = [];
+        let isAnime = false;
+        let dubType = 0; // 0 = Sub, 1 = Dub
 
         // NEW: Enhanced Watch Party System with Sync and Chat
         let watchParty = {
@@ -2973,6 +3061,9 @@
                 quality: 'HD',
                 ads: 'Low',
                 url: (id, type, season, episode) => {
+                    if (isAnime && type === 'tv') {
+                        return `https://vidsrc.icu/embed/anime/${id}/${season}/${episode}/${dubType}`;
+                    }
                     if (type === 'movie') return `https://vidsrc.xyz/embed/movie/${id}`;
                     return `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}`;
                 }
@@ -4444,6 +4535,18 @@
             const endpoint = contentType === 'movie' ? `movie/${id}` : `tv/${id}`;
             const item = await fetch(`https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}`).then(r => r.json());
             currentTitle = item.title || item.name;
+            
+            // Anime Detection & Dub Toggle
+            isAnime = false;
+            if (contentType === 'tv' && item.genres && item.genres.some(g => g.id === 16)) {
+                isAnime = true;
+            }
+            dubType = 0;
+            const dubToggle = document.getElementById('dubToggle');
+            const dubContainer = document.getElementById('dubToggleContainer');
+            if (dubToggle) dubToggle.checked = false;
+            if (dubContainer) dubContainer.style.display = isAnime ? 'flex' : 'none';
+            
             const recs = await fetchData(`${contentType}/${id}/recommendations`);
             window.history.pushState({}, '', `?watch=${contentType}-${id}`);
             
@@ -4501,6 +4604,7 @@
 
         function loadMoviePlayer(id) {
             const frame = document.getElementById('videoFrame');
+            hasSkippedIntro = false;
             const server = premiumServers[currentServer];
             
             if (server) {
@@ -4558,6 +4662,7 @@
 
         async function loadEpisodesForSeason(season, seriesId) {
             const seasonData = await fetch(`https://api.themoviedb.org/3/tv/${seriesId}/season/${season}?api_key=${API_KEY}`).then(r => r.json());
+            currentSeasonEpisodesCount = seasonData.episodes ? seasonData.episodes.length : 0;
             const grid = document.getElementById('episodeGrid');
             grid.innerHTML = '';
             seasonData.episodes.forEach(ep => {
@@ -4572,6 +4677,7 @@
         function loadEpisode(season, episode) {
             currentSeason = season;
             currentEpisode = episode;
+            hasSkippedIntro = false;
             document.querySelectorAll('.episode-btn').forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === episode - 1);
             });
@@ -4914,6 +5020,97 @@
             document.getElementById('watchPartyPanel').classList.remove('active');
             document.getElementById('serverPanel').classList.remove('active');
         });
+
+        // Player Settings & Auto-Logic
+        let playerSettings = JSON.parse(localStorage.getItem('sids_player_settings')) || {
+            autoNext: true,
+            autoSkip: false
+        };
+        let hasSkippedIntro = false;
+        let currentSeasonEpisodesCount = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+             initPlayerSettings();
+        });
+
+        function initPlayerSettings() {
+            const autoNextToggle = document.getElementById('autoNextToggle');
+            const autoSkipToggle = document.getElementById('autoSkipToggle');
+            if(autoNextToggle) autoNextToggle.checked = playerSettings.autoNext;
+            if(autoSkipToggle) autoSkipToggle.checked = playerSettings.autoSkip;
+        }
+
+        function toggleAutoNext() {
+            playerSettings.autoNext = document.getElementById('autoNextToggle').checked;
+            savePlayerSettings();
+        }
+
+        function toggleAutoSkip() {
+            playerSettings.autoSkip = document.getElementById('autoSkipToggle').checked;
+            savePlayerSettings();
+        }
+
+        function savePlayerSettings() {
+            localStorage.setItem('sids_player_settings', JSON.stringify(playerSettings));
+            showToast('Settings saved');
+        }
+
+        function toggleDub() {
+            dubType = document.getElementById('dubToggle').checked ? 1 : 0;
+            const activeBtn = document.querySelector('.server-btn.active');
+            if (currentServer) {
+                switchServer(currentServer, activeBtn);
+            }
+            showToast(dubType === 1 ? 'Switched to Dub' : 'Switched to Sub');
+        }
+
+        function manualSkip() {
+            const frame = document.getElementById('videoFrame');
+            if (frame && frame.contentWindow) {
+                frame.contentWindow.postMessage({event: 'command', func: 'seekTo', args: [85, true]}, '*');
+                frame.contentWindow.postMessage({action: 'skip', value: 85}, '*'); 
+            }
+            showToast('Skipping Intro...');
+        }
+
+        window.addEventListener('message', (e) => {
+            if (!e.data) return;
+
+            // Auto Next
+            if (e.data.event === 'ended' || e.data === 'ended') {
+                if (playerSettings.autoNext) {
+                    nextEpisode();
+                }
+            }
+
+            // Auto Skip Intro
+            if (playerSettings.autoSkip && !hasSkippedIntro) {
+                if (e.data.event === 'timeupdate' || e.data.event === 'progress') {
+                    const time = e.data.time || e.data.seconds || 0;
+                    if (time < 5 && time > 0) {
+                        manualSkip();
+                        hasSkippedIntro = true;
+                    }
+                }
+            }
+        });
+
+        function nextEpisode() {
+            if (contentType !== 'tv' && contentType !== 'anime') return;
+
+            if (currentEpisode < currentSeasonEpisodesCount) {
+                loadEpisode(currentSeason, currentEpisode + 1);
+            } else {
+                const tabs = document.querySelectorAll('.season-tab');
+                if (currentSeason < tabs.length) {
+                    selectSeason(currentSeason + 1).then(() => {
+                         loadEpisode(currentSeason, 1);
+                    });
+                } else {
+                     showToast('No more episodes.');
+                }
+            }
+        }
     </script>
 </body>
 </html>
