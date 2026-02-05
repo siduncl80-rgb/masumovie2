@@ -259,12 +259,26 @@
         }
 
         header.scrolled {
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 15, 15, 0.95); /* More opaque, less blur reliance */
+            backdrop-filter: blur(10px); /* Reduced blur radius */
+            -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            height: 56px; /* Reduced from 64px */
+            height: 56px;
+        }
+
+        /* Mobile Performance: Disable heavy effects */
+        @media (max-width: 768px) {
+            header.scrolled {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background: #0f0f0f;
+            }
+            
+            .logo-text {
+                filter: none; /* Remove expensive drop-shadow */
+                text-shadow: 0 2px 4px rgba(255, 51, 51, 0.3); /* Cheaper fallback */
+            }
         }
 
         .logo-container {
@@ -501,12 +515,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            background: rgba(0,0,0,0.9);
             padding: 16px 12px;
             transform: translateY(100%);
             transition: transform 0.3s ease;
             z-index: 20;
-            backdrop-filter: blur(10px);
+            /* Removed blur for performance */
         }
 
         .movie-card:hover .quick-info-tab {
@@ -1523,7 +1537,8 @@
             overflow: hidden;
             cursor: pointer;
             background: var(--surface);
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
+            contain: content;
         }
 
         .movie-card:hover {
@@ -1535,6 +1550,7 @@
             position: relative;
             aspect-ratio: 2/3;
             overflow: hidden;
+            will-change: transform;
         }
 
         .movie-card img {
@@ -1595,7 +1611,7 @@
             border-radius: 3px;
             font-size: 11px;
             font-weight: 600;
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.5); /* Replaced expensive backdrop-filter */
         }
 
         .badge-rating {
@@ -5052,7 +5068,7 @@
                 <div class="top10-card" onclick="openContent(${item.id})">
                     <span class="top10-number">${idx + 1}</span>
                     <div class="top10-poster">
-                        <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${item.title || item.name}" loading="lazy">
+                        <img src="https://image.tmdb.org/t/p/w300${item.poster_path}" alt="${item.title || item.name}" loading="lazy" decoding="async">
                     </div>
                 </div>
             `).join('');
@@ -5068,7 +5084,7 @@
                 return `
                     <div class="continue-card" onclick="contentType='${type}'; openContent(${item.id})">
                         <div class="continue-poster">
-                            <img src="https://image.tmdb.org/t/p/w300${imagePath}" alt="${item.title}" loading="lazy">
+                            <img src="https://image.tmdb.org/t/p/w300${imagePath}" alt="${item.title}" loading="lazy" decoding="async">
                             <div class="continue-badge"><i class="fas fa-bookmark"></i></div>
                             <div class="continue-badge-right"><i class="fas fa-plus"></i></div>
                         </div>
@@ -5104,7 +5120,7 @@
             return `
                 <div class="movie-card">
                     <div class="poster">
-                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}" loading="lazy">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${title}" loading="lazy" decoding="async">
                         <div class="poster-overlay" onclick="contentType='${type}'; openContent(${item.id})">
                             <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
