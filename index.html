@@ -20,13 +20,19 @@
     <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=SIDS+Cinema">
     <meta name="twitter:card" content="summary_large_image">
 
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://api.themoviedb.org">
+    <link rel="dns-prefetch" href="https://image.tmdb.org">
+    <link rel="dns-prefetch" href="https://api.themoviedb.org">
+
     <!-- Preload Critical Resources -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
 
     <style>
         :root { 
@@ -69,6 +75,21 @@
             overflow-x: hidden;
             line-height: 1.6;
             transition: background 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Performance Optimizations */
+        .movie-card, .scroll-row, .header, .sidebar {
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        img {
+            content-visibility: auto;
         }
 
         /* NEW: Logo Animation Overlay */
@@ -201,6 +222,8 @@
             background: var(--accent);
         }
 
+        .view-all-hidden { display: none !important; }
+
         .switch-label input:checked + .switch-slider::after {
             transform: translateX(16px);
         }
@@ -227,17 +250,21 @@
             right: 0;
             z-index: 1000;
             padding: 0 4%;
-            height: 64px;
+            height: 60px; /* Reduced from 72px */
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(15, 15, 15, 1) 0%, rgba(15, 15, 15, 0) 100%);
-            transition: all 0.3s ease;
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         header.scrolled {
-            background: var(--bg);
-            box-shadow: 0 2px 8px var(--shadow);
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            height: 56px; /* Reduced from 64px */
         }
 
         .logo-container {
@@ -248,11 +275,15 @@
         }
 
         .logo-text {
-            font-size: 28px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px; /* Slightly smaller for balance */
             font-weight: 800;
-            color: var(--accent);
-            letter-spacing: -1px;
+            background: linear-gradient(135deg, #FF0055 0%, #FF3333 50%, #FF9933 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
             transition: transform 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(255, 51, 51, 0.3));
         }
 
         .logo-text:hover {
@@ -262,20 +293,45 @@
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 28px; /* Reduced gap */
+            /* Removed heavy pill background for cleaner look */
+            background: transparent;
+            padding: 0;
+            border: none;
+            backdrop-filter: none;
         }
 
         .nav-item {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 14px; /* Standard readable size */
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
             position: relative;
+            letter-spacing: 0.2px;
         }
 
         .nav-item:hover, .nav-item.active {
-            color: var(--text-main);
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 20px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover::after, .nav-item.active::after {
+            transform: translateX(-50%) scaleX(1);
         }
 
         .nav-actions {
@@ -287,18 +343,24 @@
         .search-box {
             display: flex;
             align-items: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 8px 12px;
-            gap: 8px;
-            min-width: 240px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 10px 18px;
+            gap: 10px;
+            min-width: 260px;
             transition: all 0.3s ease;
             position: relative;
         }
 
+        .search-box:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
         .search-box:focus-within {
-            border-color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
         .search-box input {
@@ -367,30 +429,38 @@
         }
 
         .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            backdrop-filter: blur(4px);
         }
 
         .icon-btn:hover {
-            background: var(--surface);
-            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0);
         }
 
         .icon-btn .badge {
             position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--accent);
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #FF0055, #FF3333);
             color: white;
             font-size: 10px;
             font-weight: 700;
@@ -398,25 +468,31 @@
             border-radius: 10px;
             min-width: 16px;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(255, 0, 85, 0.4);
+            border: 2px solid #0f0f0f;
         }
 
         .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
         }
-
+        
         .theme-toggle:hover {
-            background: var(--surface);
-            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         /* NEW: Quick Info Tab - Updated to match image reference */
@@ -1345,38 +1421,86 @@
 
         /* Content Sections */
         .section {
-            padding: 32px 4%;
+            padding: 24px 0; /* Reduced padding, handled by inner elements */
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 0 4%;
+            position: relative;
+        }
+
+        .scroll-nav {
+            display: none;
+            gap: 8px;
+            margin-left: auto;
+            margin-right: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .scroll-nav {
+                display: flex;
+            }
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
+            color: var(--accent); /* Primary color for title */
         }
 
         .view-all {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            color: #3498db; /* Blue color */
             cursor: pointer;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.2s;
+            margin-left: 0;
+        }
+        
+        .view-all::before {
+            content: "|";
+            margin-right: 12px;
+            color: var(--text-dim);
+            font-weight: 400;
         }
 
         .view-all:hover {
-            color: var(--text-main);
+            color: white;
+            text-decoration: underline;
         }
 
         .scroll-row {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             overflow-x: auto;
-            padding-bottom: 12px;
+            padding: 0 4% 20px 4%;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
@@ -1629,8 +1753,8 @@
         /* Continue Watching */
         .continue-card {
             position: relative;
-            flex: 0 0 280px;
-            border-radius: 6px;
+            flex: 0 0 160px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             background: var(--surface);
@@ -1641,59 +1765,53 @@
             transform: scale(1.05);
         }
 
-        .continue-backdrop {
-            aspect-ratio: 16/9;
+        .continue-poster {
             position: relative;
+            aspect-ratio: 2/3;
+            width: 100%;
         }
 
-        .continue-backdrop img {
+        .continue-poster img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .continue-overlay {
+        .continue-badge {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, var(--surface) 0%, transparent 100%);
+            top: 0;
+            left: 0;
+            background: rgba(33, 33, 33, 0.8);
+            padding: 4px 8px;
+            border-bottom-right-radius: 8px;
+            color: white;
+            font-size: 12px;
+            z-index: 2;
         }
 
-        .continue-play {
+        .continue-badge-right {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 48px;
-            height: 48px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            top: 0;
+            right: 0;
+            background: #e50914;
+            padding: 4px 8px;
+            border-bottom-left-radius: 8px;
+            color: white;
+            font-size: 12px;
+            z-index: 2;
         }
 
-        .continue-info {
-            padding: 12px;
-        }
-
-        .continue-title {
+        .continue-footer {
+            background: #00bfff; /* Vibrant Cyan Blue */
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+            text-align: center;
             font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--surface-light);
-            border-radius: 2px;
+            white-space: nowrap;
             overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 2px;
+            text-overflow: ellipsis;
+            letter-spacing: 0.5px;
         }
 
         /* Stream Page */
@@ -2455,6 +2573,116 @@
                 padding: 12px;
             }
         }
+        /* Scroll Buttons */
+        .scroll-row-container {
+            position: relative;
+        }
+        
+        .scroll-btn {
+            position: absolute;
+            top: 0;
+            bottom: 20px;
+            width: 50px;
+            background: rgba(20, 20, 20, 0.5);
+            border: none;
+            color: white;
+            font-size: 24px;
+            z-index: 20;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        
+        .scroll-row-container:hover .scroll-btn {
+            opacity: 1;
+        }
+        
+        .scroll-btn:hover {
+            background: rgba(20, 20, 20, 0.8);
+            color: var(--accent);
+        }
+        
+        .scroll-btn.left {
+            left: 0;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .scroll-btn.right {
+            right: 0;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .scroll-btn {
+                display: flex;
+            }
+        }
+        /* Providers Section */
+        .providers-row {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 0 4% 20px 4%;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .providers-row::-webkit-scrollbar { display: none; }
+        
+        .provider-card {
+            flex: 0 0 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: var(--surface);
+            position: relative;
+        }
+        
+        .provider-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+            z-index: 10;
+        }
+        
+        .provider-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .provider-card {
+                flex: 0 0 100px;
+                height: 100px;
+            }
+        }
+    </style>
+    <style>
+        @media (max-width: 768px) {
+            .floating-panel {
+                width: 100vw !important;
+                height: 100vh !important;
+                top: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                border-radius: 0 !important;
+                max-height: none !important;
+                left: 0 !important;
+                transform: none !important;
+                z-index: 2000 !important;
+            }
+            .server-list {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2610,11 +2838,11 @@
         <div class="filter-section">
             <div class="filter-section-title">Year</div>
             <div class="year-slider">
-                <input type="range" min="1970" max="2025" value="2025" id="yearSlider" oninput="updateYearLabel(this.value)">
+                <input type="range" min="1970" max="2026" value="2026" id="yearSlider" oninput="updateYearLabel(this.value)">
                 <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--text-dim);">
                     <span>1970</span>
-                    <span id="yearLabel">2025</span>
-                    <span>2025</span>
+                    <span id="yearLabel">2026</span>
+                    <span>2026</span>
                 </div>
             </div>
         </div>
@@ -2798,21 +3026,46 @@
         <!-- Continue Watching -->
         <section class="section" id="continueSection" style="display: none;">
             <div class="section-header">
-                <h2 class="section-title">Continue Watching</h2>
+                <h2 class="section-title" style="color: #00bfff;">Continue Watching</h2>
+                <div class="view-all">View All</div>
             </div>
             <div class="scroll-row" id="continueRow"></div>
+        </section>
+
+        <!-- Providers Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title" style="color: #00bfff;">Providers</h2>
+                <div class="view-all">View All</div>
+                <div class="scroll-nav">
+                    <button class="nav-btn" onclick="scrollSection('providersRow', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="nav-btn" onclick="scrollSection('providersRow', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="scroll-row-container">
+                <button class="scroll-btn left" onclick="scrollSection('providersRow', -1)"><i class="fas fa-chevron-left"></i></button>
+                <div class="providers-row" id="providersRow"></div>
+                <button class="scroll-btn right" onclick="scrollSection('providersRow', 1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
         </section>
 
         <!-- Top 10 -->
         <section class="section">
             <div class="section-header">
-                <h2 class="section-title">Top 10 Today</h2>
+                <h2 class="section-title" style="color: #ffa500;">Now Playing</h2>
+                <div class="view-all">View All</div>
             </div>
             <div class="top10-row" id="top10Row"></div>
         </section>
 
-        <!-- Main Grid -->
-        <section class="section">
+        <!-- Home Rows Section (Categories) -->
+        <div id="homeRowsSection"></div>
+
+        <!-- View All Grid Section -->
+        <section class="section" id="viewAllSection" style="display: none;">
+            <div class="back-btn" onclick="exitViewAll()" style="margin-bottom: 10px; display: inline-flex;">
+                <i class="fas fa-arrow-left"></i> Back
+            </div>
             <div class="section-header">
                 <h2 class="section-title" id="gridTitle">Trending Now</h2>
                 <div style="display: flex; gap: 12px; align-items: center;">
@@ -2842,7 +3095,11 @@
                 <h2 class="section-title">New Releases</h2>
                 <div class="view-all" onclick="loadByYear(2024)">View All →</div>
             </div>
-            <div class="scroll-row" id="newReleasesRow"></div>
+            <div class="scroll-row-container">
+                <button class="scroll-btn left" onclick="scrollSection('newReleasesRow', -1)"><i class="fas fa-chevron-left"></i></button>
+                <div class="scroll-row" id="newReleasesRow"></div>
+                <button class="scroll-btn right" onclick="scrollSection('newReleasesRow', 1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
         </section>
 
         <!-- Popular Series -->
@@ -2851,7 +3108,11 @@
                 <h2 class="section-title">Popular TV Shows</h2>
                 <div class="view-all" onclick="switchContentType('tv')">View All →</div>
             </div>
-            <div class="scroll-row" id="seriesRow"></div>
+            <div class="scroll-row-container">
+                <button class="scroll-btn left" onclick="scrollSection('seriesRow', -1)"><i class="fas fa-chevron-left"></i></button>
+                <div class="scroll-row" id="seriesRow"></div>
+                <button class="scroll-btn right" onclick="scrollSection('seriesRow', 1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
         </section>
     </main>
 
@@ -2908,6 +3169,9 @@
             <button class="btn btn-secondary btn-sm" onclick="manualSkip()">
                 <i class="fas fa-forward"></i> Skip Intro
             </button>
+            <button class="btn btn-primary btn-sm" onclick="nextEpisode()" style="margin-left: 8px;">
+                <i class="fas fa-step-forward"></i> Next Ep
+            </button>
         </div>
 
         <!-- NEW: Server Warning -->
@@ -2945,12 +3209,7 @@
 
         <div class="content-details" id="contentDetails"></div>
 
-        <section class="section" style="padding: 40px 0;">
-            <div class="section-header">
-                <h2 class="section-title">You May Also Like</h2>
-            </div>
-            <div class="content-grid" id="recGrid"></div>
-        </section>
+        <div id="recommendationSections" style="padding-bottom: 40px;"></div>
     </main>
 
     <!-- FOOTER -->
@@ -3017,6 +3276,7 @@
         const API_KEY = atob("MDc1YWJiMzFlNTQ1OWUxNTljN2E3YTkzMjgzNDUyNDE=");
         let curPage = 1, curPath = 'trending/movie/week', curId = null, currentTitle = '';
         let contentType = 'movie';
+        let isMixedContent = true; // Default to mixed content for Home
         let currentSeason = 1, currentEpisode = 1;
         let favorites = JSON.parse(localStorage.getItem('sids_favs') || '[]');
         let billboardItems = [], billboardIdx = 0, billboardTimer;
@@ -3025,7 +3285,7 @@
         let currentInfoItem = null;
         let mobileFilter = 'all';
         let selectedGenres = [];
-        let selectedYear = 2025;
+        let selectedYear = 2026;
         let selectedRating = 0;
         let currentSort = 'popularity';
         let cachedItems = [];
@@ -3100,8 +3360,8 @@
                 quality: 'HD',
                 ads: 'None',
                 url: (id, type, season, episode) => {
-                    if (type === 'movie') return `https://paradoxstream.com/movie/${id}`;
-                    return `https://paradoxstream.com/tv/${id}/${season}/${episode}`;
+                    if (type === 'movie') return `https://paradoxstream.com/embed/movie/${id}`;
+                    return `https://paradoxstream.com/embed/tv/${id}/${season}/${episode}`;
                 }
             }
         };
@@ -3924,7 +4184,14 @@
         }
 
         function goHome() {
+            isMixedContent = true;
+            // Update nav active states
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const homeBtn = document.querySelector('.nav-item[onclick="goHome()"]');
+            if (homeBtn) homeBtn.classList.add('active');
+
             showPage('home');
+            loadTrending();
             window.history.pushState({}, '', window.location.pathname);
         }
 
@@ -3963,14 +4230,296 @@
 
         async function loadTrending(btn) {
             if (btn) highlightQuickChip(btn);
-            curPage = 1;
-            curPath = `trending/${contentType}/week`;
-            const items = await fetchData(curPath, curPage);
-            cachedItems = items;
+            
+            exitViewAll();
+            
+            // Load Categories
+            loadHomeCategories();
+            
+            // Render Providers
+            renderProviders();
+
+            // Billboard logic (keep existing)
+            const billboardPath = `trending/${contentType}/week`;
+            const items = await fetchData(billboardPath, 1);
             billboardItems = items.slice(0, 5);
             startBillboard();
-            renderGrid('mainGrid', items);
+            
             document.getElementById('gridTitle').textContent = 'Trending Now';
+            showPage('home');
+        }
+
+        function scrollSection(id, direction) {
+            let rowId = id;
+            if (typeof id === 'number') {
+                rowId = `homeRow_${id}`;
+            }
+            const row = document.getElementById(rowId);
+            if (row) {
+                const scrollAmount = row.clientWidth * 0.8;
+                row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        function getCategoryColor(title) {
+            if (title.includes('Netflix')) return '#e50914';
+            if (title.includes('Disney')) return '#113ccf';
+            if (title.includes('Amazon') || title.includes('Prime')) return '#00a8e1';
+            if (title.includes('Apple')) return '#A3AAAE';
+            if (title.includes('Hulu')) return '#1ce783';
+            if (title.includes('HBO') || title.includes('Max')) return '#9933cc';
+            if (title.includes('Paramount')) return '#0066cc';
+            if (title.includes('Peacock')) return '#ffcc00';
+            if (title.includes('Crunchyroll')) return '#f47521';
+            if (title.includes('Trending Movies')) return '#3498db';
+            if (title.includes('Trending TV')) return '#9b59b6';
+            if (title.includes('Action')) return '#e74c3c';
+            if (title.includes('Comedy')) return '#f1c40f';
+            if (title.includes('Horror')) return '#c0392b';
+            if (title.includes('Sci-Fi')) return '#2ecc71';
+            if (title.includes('Romance')) return '#e91e63';
+            if (title.includes('Animation')) return '#1abc9c';
+            if (title.includes('Top Rated')) return '#f39c12';
+            if (title.includes('Indian')) return '#ff9933';
+            return '#e50914'; // Default
+        }
+
+        async function loadHomeCategories() {
+            const container = document.getElementById('homeRowsSection');
+            if (!container) return;
+            
+            const isMovie = contentType === 'movie';
+            const type = isMovie ? 'movie' : 'tv';
+            
+            // Define core categories
+            let coreCategories = [];
+            
+            if (isMixedContent) {
+                coreCategories = [
+                    { title: 'Trending Movies', path: 'trending/movie/week', type: 'movie' },
+                    { title: 'Trending TV Shows', path: 'trending/tv/week', type: 'tv' },
+                    { title: 'Trending Anime', path: 'discover/tv?with_genres=16&sort_by=popularity.desc', type: 'tv' }
+                ];
+            } else if (isMovie) {
+                coreCategories = [
+                    { title: 'Trending Movies', path: 'trending/movie/week', type: 'movie' }
+                ];
+            } else {
+                coreCategories = [
+                    { title: 'Trending TV Shows', path: 'trending/tv/week', type: 'tv' }
+                ];
+            }
+
+            // Platform specific categories
+            let platformCategories = [];
+            
+            const moviePlatforms = [
+                 { title: 'Netflix Movies', path: 'discover/movie?with_companies=20555|178464&sort_by=popularity.desc', type: 'movie' },
+                 { title: 'Amazon Prime Movies', path: 'discover/movie?with_companies=20580&sort_by=popularity.desc', type: 'movie' },
+                 { title: 'Disney+ Movies', path: 'discover/movie?with_companies=2&sort_by=popularity.desc', type: 'movie' },
+                 { title: 'Indian Movies', path: 'discover/movie?with_original_language=hi|te|ta|ml&sort_by=popularity.desc&region=IN', type: 'movie' },
+                 { title: 'Apple TV+ Movies', path: 'discover/movie?with_companies=108568&sort_by=popularity.desc', type: 'movie' },
+                 { title: 'Paramount+ Movies', path: 'discover/movie?with_companies=4&sort_by=popularity.desc', type: 'movie' },
+                 { title: 'Max Movies', path: 'discover/movie?with_companies=17&sort_by=popularity.desc', type: 'movie' }
+            ];
+
+            const tvPlatforms = [
+                { title: 'Netflix Originals', path: 'discover/tv?with_networks=213&sort_by=popularity.desc', type: 'tv' },
+                { title: 'Amazon Prime Shows', path: 'discover/tv?with_networks=1024&sort_by=popularity.desc', type: 'tv' },
+                { title: 'Apple TV+ Shows', path: 'discover/tv?with_networks=2552&sort_by=popularity.desc', type: 'tv' },
+                { title: 'Disney+ Shows', path: 'discover/tv?with_networks=2739&sort_by=popularity.desc', type: 'tv' },
+                { title: 'Paramount+ Shows', path: 'discover/tv?with_networks=4330&sort_by=popularity.desc', type: 'tv' },
+                { title: 'Max Shows', path: 'discover/tv?with_networks=49|3186&sort_by=popularity.desc', type: 'tv' }
+            ];
+
+            if (isMixedContent) {
+                // Interleave or just append both?
+                // Let's append them for now to avoid confusion, or interleave for variety.
+                // User said "add like every categories".
+                // Simple merge:
+                platformCategories = [...moviePlatforms, ...tvPlatforms];
+                // Sort by nothing (keep order) or maybe interleave?
+                // Let's keep it simple: Movies then TV, or interleaved.
+                // Interleaving might be better for "Home" feel.
+                platformCategories = [];
+                const maxLength = Math.max(moviePlatforms.length, tvPlatforms.length);
+                for (let i = 0; i < maxLength; i++) {
+                    if (moviePlatforms[i]) platformCategories.push(moviePlatforms[i]);
+                    if (tvPlatforms[i]) platformCategories.push(tvPlatforms[i]);
+                }
+            } else if (isMovie) {
+                platformCategories = moviePlatforms;
+            } else {
+                platformCategories = tvPlatforms;
+            }
+            
+            const allCategories = [...coreCategories, ...platformCategories];
+
+            // Render skeletons
+            container.innerHTML = allCategories.map((cat, index) => {
+                const titleColor = getCategoryColor(cat.title);
+                return `
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title" style="color: ${titleColor};">${cat.title}</h2>
+                        <div class="view-all" onclick="viewCategory('${cat.title}', '${cat.path}')">View All</div>
+                        <div class="scroll-nav">
+                            <button class="nav-btn" onclick="scrollSection(${index}, -1)"><i class="fas fa-chevron-left"></i></button>
+                            <button class="nav-btn" onclick="scrollSection(${index}, 1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="scroll-row-container">
+                        <button class="scroll-btn left" onclick="scrollSection(${index}, -1)"><i class="fas fa-chevron-left"></i></button>
+                        <div class="scroll-row" id="homeRow_${index}">
+                            <div class="spinner" style="height: 150px;"></div>
+                        </div>
+                        <button class="scroll-btn right" onclick="scrollSection(${index}, 1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </section>
+            `}).join('');
+
+            // Load data
+            allCategories.forEach((cat, index) => {
+                fetchData(cat.path, 1).then(items => {
+                    renderScrollRow(`homeRow_${index}`, items, cat.type || type);
+                });
+            });
+        }
+
+        async function renderProviders() {
+            const container = document.getElementById('providersRow');
+            if (!container) return;
+
+            // User's specific priority list
+            const customPriority = [
+                8,    // Netflix
+                9,    // Amazon Prime Video
+                350,  // Apple TV+
+                337,  // Disney+
+                283,  // Crunchyroll
+                1899, // Max
+                15,   // Hulu
+                386,  // Peacock
+                531   // Paramount+
+            ];
+
+            try {
+                const response = await fetch(`https://api.themoviedb.org/3/watch/providers/movie?api_key=${API_KEY}&watch_region=US`);
+                const data = await response.json();
+                
+                if (!data.results) return;
+
+                // Sort: Custom priority first, then by TMDB display priority
+                const providers = data.results
+                    .sort((a, b) => {
+                        const indexA = customPriority.indexOf(a.provider_id);
+                        const indexB = customPriority.indexOf(b.provider_id);
+                        
+                        // If both are in custom list, sort by custom order
+                        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                        // If only A is in custom list, A comes first
+                        if (indexA !== -1) return -1;
+                        // If only B is in custom list, B comes first
+                        if (indexB !== -1) return 1;
+                        
+                        // Otherwise fallback to TMDB display priority
+                        return a.display_priority - b.display_priority;
+                    })
+                    .slice(0, 40);
+                
+                container.innerHTML = providers.map(p => `
+                    <div class="provider-card" onclick="loadByProvider(${p.provider_id}, '${p.provider_name.replace(/'/g, "\\'")}')" title="${p.provider_name}">
+                        <img src="https://image.tmdb.org/t/p/original${p.logo_path}" alt="${p.provider_name}" loading="lazy" style="image-rendering: -webkit-optimize-contrast;">
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Error fetching providers:', e);
+            }
+        }
+        
+        async function loadByProvider(id, name) {
+            curPage = 1;
+            const sort = 'popularity.desc';
+            // Determine parameter based on type
+            const param = contentType === 'movie' ? 'with_companies' : 'with_networks';
+            // Note: For streaming providers specifically, we should use with_watch_providers and watch_region=US
+            // But user asked for "providers list", let's try watch_providers first as it's more accurate for "streaming services"
+            // However, with_companies/networks is what we used for "Originals".
+            // Let's stick to with_watch_providers for this section to be distinct.
+            
+            curPath = `discover/${contentType}?with_watch_providers=${id}&watch_region=US&sort_by=${sort}`;
+            
+            const items = await fetchData(curPath, curPage);
+            cachedItems = items;
+            
+            enableViewAllMode();
+            document.getElementById('gridTitle').textContent = `${name}`;
+            
+            renderGrid('mainGrid', items);
+            scrollToViewAll();
+        }
+
+        function scrollToViewAll() {
+            const section = document.getElementById('viewAllSection');
+            if (section) {
+                const headerOffset = 80;
+                const elementPosition = section.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function viewCategory(title, path) {
+            const homePage = document.getElementById('homePage');
+            Array.from(homePage.children).forEach(child => {
+                if (child.id === 'viewAllSection') {
+                    child.style.display = 'block';
+                } else {
+                    child.classList.add('view-all-hidden');
+                }
+            });
+            
+            document.getElementById('gridTitle').textContent = title;
+            curPage = 1;
+            curPath = path;
+            
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = '<div class="spinner"></div>';
+            
+            fetchData(curPath, curPage).then(items => {
+                cachedItems = items;
+                renderGrid('mainGrid', items);
+                // Ensure scroll listener is active
+                isLoading = false;
+            });
+            
+            scrollToViewAll();
+        }
+
+        function exitViewAll() {
+            const homePage = document.getElementById('homePage');
+            Array.from(homePage.children).forEach(child => {
+                if (child.id === 'viewAllSection') {
+                    child.style.display = 'none';
+                } else {
+                    child.classList.remove('view-all-hidden');
+                }
+            });
+        }
+
+        function enableViewAllMode() {
+            const homePage = document.getElementById('homePage');
+            Array.from(homePage.children).forEach(child => {
+                if (child.id === 'viewAllSection') {
+                    child.style.display = 'block';
+                } else {
+                    child.classList.add('view-all-hidden');
+                }
+            });
             showPage('home');
         }
 
@@ -3981,7 +4530,7 @@
 
         async function loadNewReleases() {
             const yearParam = contentType === 'movie' ? 'primary_release_year' : 'first_air_date_year';
-            const items = await fetchData(`discover/${contentType}?${yearParam}=2024&sort_by=popularity.desc`, 1);
+            const items = await fetchData(`discover/${contentType}?${yearParam}=2026&sort_by=popularity.desc`, 1);
             renderScrollRow('newReleasesRow', items.slice(0, 15));
         }
 
@@ -4005,9 +4554,12 @@
             const items = await fetchData(curPath, curPage);
             cachedItems = items;
             const genreName = genres.find(g => g.id === id)?.name || 'Genre';
+            
+            enableViewAllMode();
             document.getElementById('gridTitle').textContent = genreName;
+            
             renderGrid('mainGrid', items);
-            scrollToGrid();
+            scrollToViewAll();
         }
 
         async function loadTopRated(btn) {
@@ -4016,9 +4568,12 @@
             curPath = `${contentType}/top_rated`;
             const items = await fetchData(curPath, curPage);
             cachedItems = items;
+            
+            enableViewAllMode();
             document.getElementById('gridTitle').textContent = 'Top Rated';
+            
             renderGrid('mainGrid', items);
-            scrollToGrid();
+            scrollToViewAll();
         }
 
         async function loadByYear(year) {
@@ -4027,9 +4582,11 @@
             curPath = `discover/${contentType}?${yearParam}=${year}&sort_by=popularity.desc`;
             const items = await fetchData(curPath, curPage);
             cachedItems = items;
+            
+            enableViewAllMode();
             document.getElementById('gridTitle').textContent = `${year} Releases`;
             renderGrid('mainGrid', items);
-            scrollToGrid();
+            scrollToViewAll();
         }
 
         async function loadMore() {
@@ -4337,6 +4894,18 @@
         }
 
         function switchContentType(type) {
+            isMixedContent = false;
+            
+            // Update nav active states
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Find the nav item that corresponds to this type
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(el => {
+                if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${type}'`)) {
+                    el.classList.add('active');
+                }
+            });
+
             if (type === 'anime') {
                 contentType = 'tv';
                 loadByGenre(16);
@@ -4346,13 +4915,30 @@
                 loadTrending();
                 showToast(`Switched to ${type === 'movie' ? 'Movies' : 'TV Shows'}`);
             }
-            // Smooth scroll to content grid (Paradox scroll)
+            // Smooth scroll to content area (home rows or main grid)
             setTimeout(() => {
-                const mainGrid = document.getElementById('mainGrid');
-                if (mainGrid) {
-                    mainGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                let target = null;
+                
+                if (type === 'anime') {
+                     // For anime, scroll to main grid (since it loads by genre)
+                     target = document.getElementById('mainGrid');
+                } else {
+                     // For movies/tv, scroll to the first category row (skipping billboard)
+                     // If rows are not yet loaded, try homeRowsSection
+                     target = document.getElementById('homeRow_0') || document.getElementById('homeRowsSection');
                 }
-            }, 300);
+
+                if (target) {
+                    const headerOffset = 80; // Approximate header height + padding
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                }
+            }, 500); // Increased timeout slightly to ensure content render
         }
 
         async function showRandomMovie() {
@@ -4367,8 +4953,26 @@
         }
 
         // Billboard
-        function startBillboard() {
+        async function startBillboard() {
             clearInterval(billboardTimer);
+            // Fetch logos for all billboard items first
+            await Promise.all(billboardItems.map(async (item) => {
+                if (!item.logo_path) {
+                    try {
+                        const type = item.media_type || contentType; // Use media_type if available (trending results have it)
+                        const response = await fetch(`https://api.themoviedb.org/3/${type}/${item.id}/images?api_key=${API_KEY}&include_image_language=en,null`);
+                        const data = await response.json();
+                        const logo = data.logos?.find(l => l.iso_639_1 === 'en') || data.logos?.[0];
+                        if (logo) {
+                            item.logo_path = logo.file_path;
+                            item.logo_aspect_ratio = logo.aspect_ratio;
+                        }
+                    } catch (e) {
+                        console.error('Error fetching logo for billboard:', item.title || item.name);
+                    }
+                }
+            }));
+            
             renderBillboard();
             billboardTimer = setInterval(() => {
                 billboardIdx = (billboardIdx + 1) % billboardItems.length;
@@ -4383,16 +4987,31 @@
             container.innerHTML = billboardItems.map((item, idx) => {
                 const isActive = idx === billboardIdx;
                 const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                
+                // Use logo if available, otherwise title text
+                let titleHtml = `<h1 class="billboard-title">${item.title || item.name}</h1>`;
+                if (item.logo_path) {
+                    // Adjust width based on aspect ratio (wider logos need more width constraint)
+                    const maxWidth = item.logo_aspect_ratio > 2 ? '400px' : '300px';
+                    titleHtml = `
+                        <div class="billboard-logo-container" style="margin-bottom: 24px;">
+                            <img src="https://image.tmdb.org/t/p/original${item.logo_path}" 
+                                 alt="${item.title || item.name}" 
+                                 class="billboard-logo"
+                                 style="max-width: ${maxWidth}; width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
+                        </div>`;
+                }
+
                 return `
                     <div class="billboard-slide ${isActive ? 'active' : ''}">
                         <div class="billboard-bg" style="background-image: url('https://image.tmdb.org/t/p/original${item.backdrop_path}')"></div>
                         <div class="billboard-overlay"></div>
                         <div class="billboard-content">
-                            <h1 class="billboard-title">${item.title || item.name}</h1>
+                            ${titleHtml}
                             <div class="billboard-meta">
                                 <span class="meta-item rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
                                 <span class="meta-item"><i class="fas fa-calendar"></i> ${year}</span>
-                                <span class="meta-item"><i class="fas fa-film"></i> ${contentType === 'tv' ? 'TV Show' : 'Movie'}</span>
+                                <span class="meta-item"><i class="fas fa-film"></i> ${item.media_type === 'tv' || contentType === 'tv' ? 'TV Show' : 'Movie'}</span>
                             </div>
                             <p class="billboard-desc">${item.overview}</p>
                             <div class="billboard-actions">
@@ -4441,21 +5060,24 @@
 
         function renderContinueRow(items) {
             const container = document.getElementById('continueRow');
-            container.innerHTML = items.map(item => `
-                <div class="continue-card" onclick="contentType='${item.type || 'movie'}'; openContent(${item.id})">
-                    <div class="continue-backdrop">
-                        <img src="https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}" alt="${item.title}" loading="lazy">
-                        <div class="continue-overlay"></div>
-                        <div class="continue-play"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="continue-info">
-                        <div class="continue-title">${item.title}</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${Math.random() * 60 + 20}%"></div>
+            container.innerHTML = items.map(item => {
+                const timeAgo = getTimeAgo(item.timestamp || Date.now());
+                const imagePath = item.poster_path || item.backdrop_path;
+                const type = item.type || 'movie';
+                
+                return `
+                    <div class="continue-card" onclick="contentType='${type}'; openContent(${item.id})">
+                        <div class="continue-poster">
+                            <img src="https://image.tmdb.org/t/p/w300${imagePath}" alt="${item.title}" loading="lazy">
+                            <div class="continue-badge"><i class="fas fa-bookmark"></i></div>
+                            <div class="continue-badge-right"><i class="fas fa-plus"></i></div>
+                        </div>
+                        <div class="continue-footer">
+                            Watched ${timeAgo}
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderGenreGrid() {
@@ -4530,6 +5152,70 @@
         }
 
         // Stream functions
+        async function loadExtendedRecommendations(id, type, isAnime) {
+            const container = document.getElementById('recommendationSections');
+            container.innerHTML = '<div style="display:flex;justify-content:center;padding:20px;"><div class="spinner"></div></div>';
+
+            try {
+                const promises = [
+                    fetchData(`${type}/${id}/recommendations`),
+                    fetchData(`${type}/${id}/similar`)
+                ];
+
+                if (isAnime) {
+                    promises.push(fetchData('discover/tv?with_genres=16&sort_by=vote_average.desc&vote_count.gte=500'));
+                }
+
+                const results = await Promise.all(promises);
+                const recs = results[0];
+                const similar = results[1];
+                const topAnime = isAnime ? results[2] : [];
+
+                let html = '';
+
+                if (recs && recs.length > 0) {
+                    html += `
+                        <section class="section">
+                            <div class="section-header"><h2 class="section-title">You May Also Like</h2></div>
+                            <div class="scroll-row" id="recRow"></div>
+                        </section>
+                    `;
+                }
+
+                if (similar && similar.length > 0) {
+                    html += `
+                        <section class="section">
+                            <div class="section-header"><h2 class="section-title">Similar Content</h2></div>
+                            <div class="scroll-row" id="similarRow"></div>
+                        </section>
+                    `;
+                }
+
+                if (isAnime && topAnime && topAnime.length > 0) {
+                    html += `
+                        <section class="section">
+                            <div class="section-header"><h2 class="section-title">Top Rated Anime</h2></div>
+                            <div class="scroll-row" id="topAnimeRow"></div>
+                        </section>
+                    `;
+                }
+                
+                if (html === '') {
+                     html = '<p style="text-align:center;color:var(--text-dim);">No recommendations available.</p>';
+                }
+
+                container.innerHTML = html;
+
+                if (recs && recs.length > 0) renderScrollRow('recRow', recs);
+                if (similar && similar.length > 0) renderScrollRow('similarRow', similar);
+                if (isAnime && topAnime && topAnime.length > 0) renderScrollRow('topAnimeRow', topAnime);
+                
+            } catch (e) {
+                console.error('Error loading recommendations', e);
+                container.innerHTML = '';
+            }
+        }
+
         async function openContent(id) {
             curId = id;
             const endpoint = contentType === 'movie' ? `movie/${id}` : `tv/${id}`;
@@ -4547,7 +5233,7 @@
             if (dubToggle) dubToggle.checked = false;
             if (dubContainer) dubContainer.style.display = isAnime ? 'flex' : 'none';
             
-            const recs = await fetchData(`${contentType}/${id}/recommendations`);
+            // const recs = await fetchData(`${contentType}/${id}/recommendations`); // Removed
             window.history.pushState({}, '', `?watch=${contentType}-${id}`);
             
             if (contentType === 'tv') {
@@ -4586,7 +5272,8 @@
                 </div>
             `;
             
-            renderGrid('recGrid', recs.slice(0, 12));
+            // renderGrid('recGrid', recs.slice(0, 12)); // Removed
+            loadExtendedRecommendations(id, contentType, isAnime);
             showPage('stream');
             
             // Show server warning
@@ -4792,9 +5479,11 @@
             curPath = filterPath;
             const items = await fetchData(curPath, curPage);
             cachedItems = items;
+            
+            enableViewAllMode();
             document.getElementById('gridTitle').textContent = 'Filtered Results';
             renderGrid('mainGrid', items);
-            showPage('home');
+            
             scrollToGrid();
             toggleFilterPanel();
             showToast('Filters applied');
@@ -4802,12 +5491,12 @@
 
         function resetFilters() {
             selectedGenres = [];
-            selectedYear = 2025;
+            selectedYear = 2026;
             selectedRating = 0;
             
             document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById('yearSlider').value = 2025;
-            document.getElementById('yearLabel').textContent = '2025';
+            document.getElementById('yearSlider').value = 2026;
+            document.getElementById('yearLabel').textContent = '2026';
             document.querySelectorAll('.rating-star').forEach(star => star.classList.remove('active'));
             
             showToast('Filters reset');
@@ -4912,7 +5601,7 @@
             }
             if (e.key === 'Escape') {
                 closeMovieInfo();
-                closeMobileSearch();
+                closeMobileSearch();a
                 closeTrailer();
                 closeJoinPartyModal();
                 document.getElementById('searchRecommendations').style.display = 'none';
@@ -5066,11 +5755,13 @@
 
         function manualSkip() {
             const frame = document.getElementById('videoFrame');
-            if (frame && frame.contentWindow) {
-                frame.contentWindow.postMessage({event: 'command', func: 'seekTo', args: [85, true]}, '*');
-                frame.contentWindow.postMessage({action: 'skip', value: 85}, '*'); 
+            if (frame) {
+                 if (frame.contentWindow) {
+                    frame.contentWindow.postMessage({event: 'command', func: 'seekTo', args: [85, true]}, '*');
+                    frame.contentWindow.postMessage({action: 'skip', value: 85}, '*'); 
+                 }
+                 showToast('Skipping Intro...');
             }
-            showToast('Skipping Intro...');
         }
 
         window.addEventListener('message', (e) => {
@@ -5111,6 +5802,49 @@
                 }
             }
         }
+
+        // Scroll Top Button Logic
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Optimized Scroll Handler using requestAnimationFrame
+        let lastKnownScrollPosition = 0;
+        let ticking = false;
+        const headerElement = document.querySelector('header');
+        const scrollTopBtnElement = document.getElementById('scrollTopBtn');
+
+        function updateScrollState(scrollPos) {
+            // Header Logic
+            if (headerElement) {
+                if (scrollPos > 20) {
+                    headerElement.classList.add('scrolled');
+                } else {
+                    headerElement.classList.remove('scrolled');
+                }
+            }
+
+            // Scroll Top Button Logic
+            if (scrollTopBtnElement) {
+                if (scrollPos > 300) {
+                    scrollTopBtnElement.classList.add('show');
+                } else {
+                    scrollTopBtnElement.classList.remove('show');
+                }
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            lastKnownScrollPosition = window.scrollY;
+
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateScrollState(lastKnownScrollPosition);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
