@@ -3,22 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIDS | Stream Movies & Series Free - Watch HD Online</title>
+    <title>MasuMovie | Stream Movies & Series Free - Watch HD Online</title>
   
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23e50914'/%3E%3Cpath d='M180 150l200 106-200 106z' fill='%23ffffff'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/circled-play.png">
     <meta name="theme-color" content="#0f0f0f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192.png?text=SIDS">
 
     <!-- SEO META TAGS -->
-    <meta name="description" content="SIDS - Your Ultimate Streaming Destination. Watch unlimited movies & TV series in stunning HD quality. Discover trending films, binge-worthy series, and hidden gems. No signup, no fees, just pure entertainment. Stream smarter with SIDS.">
-    <meta name="keywords" content="watch movies free, stream movies online, free tv series, watch films online, latest movies 2025, SIDS streaming, HD movies free">
-    <meta property="og:title" content="SIDS - Premium Free Streaming | Movies & Series in HD">
+    <meta name="description" content="MasuMovie - Your Ultimate Streaming Destination. Watch unlimited movies & TV series in stunning HD quality. Discover trending films, binge-worthy series, and hidden gems. No signup, no fees, just pure entertainment. Stream smarter with MasuMovie.">
+    <meta name="keywords" content="MasuMovie, masumovie, watch movies free, stream movies online, free tv series, watch films online, latest movies 2025, MasuMovie streaming, HD movies free">
+    <meta property="og:title" content="MasuMovie - Premium Free Streaming | Movies & Series in HD">
     <meta property="og:description" content="Your gateway to unlimited entertainment. Stream thousands of movies and TV shows in crystal-clear HD. Updated daily with the latest releases.">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=SIDS+Cinema">
+    <meta property="og:image" content="https://img.icons8.com/color/512/circled-play.png">
+    <meta property="og:site_name" content="MasuMovie">
     <meta name="twitter:card" content="summary_large_image">
+
+    <!-- JSON-LD Structured Data for Google Search -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "MasuMovie",
+      "url": "https://www.masumovie.xyz/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.masumovie.xyz/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "MasuMovie",
+      "url": "https://www.masumovie.xyz/",
+      "logo": "https://img.icons8.com/color/512/circled-play.png",
+      "sameAs": [
+        "https://www.facebook.com/masumovie",
+        "https://twitter.com/masumovie",
+        "https://www.instagram.com/masumovie"
+      ]
+    }
+    </script>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
 
     <!-- Performance Optimizations -->
     <link rel="preconnect" href="https://image.tmdb.org">
@@ -92,61 +125,96 @@
             content-visibility: auto;
         }
 
-        /* NEW: Logo Animation Overlay */
+        /* NEW: Premium Cinematic Intro Animation */
         .logo-animation-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0f0f0f;
+            background: #000000;
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: fadeOut 0.8s ease 2.2s forwards;
+            animation: fadeOutOverlay 0.5s ease-in-out 3.5s forwards;
+            pointer-events: none;
         }
 
         .logo-animation {
             position: relative;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .logo-animation-text {
-            font-size: 72px;
-            font-weight: 900;
-            color: #e50914;
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
+            color: #e50914;
             opacity: 0;
             transform: scale(0.8);
-            animation: logoPop 2s ease forwards;
-            text-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+            text-shadow: 0 0 30px rgba(229, 9, 20, 0.4);
+            animation: netflixZoom 4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
 
         .logo-animation-sub {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-top: 10px;
-            opacity: 0;
-            animation: fadeIn 0.5s ease 2s forwards;
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            display: none;
         }
 
-        @keyframes logoPop {
-            0% { opacity: 0; transform: scale(0.8); }
-            60% { opacity: 1; transform: scale(1.1); }
-            80% { transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
+        /* Loading Line */
+        .logo-loader-line {
+            width: 0%;
+            height: 4px;
+            background: #e50914;
+            border-radius: 2px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.8);
+            animation: loadProgress 3s ease-in-out forwards;
+            opacity: 1;
         }
 
-        @keyframes fadeOut {
+        @keyframes netflixZoom {
+            0% { 
+                opacity: 0; 
+                transform: scale(1.1);
+            }
+            15% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            85% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; opacity: 1; }
+            80% { width: 150px; opacity: 1; }
+            100% { width: 150px; opacity: 0; }
+        }
+
+        @keyframes fadeOutOverlay {
+            from { opacity: 1; visibility: visible; }
             to { opacity: 0; visibility: hidden; }
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        @media (max-width: 768px) {
+            .logo-animation-text {
+                font-size: 3.5rem;
+            }
+            .logo-loader-line {
+                margin-top: 16px;
+            }
         }
 
         /* NEW: Skeleton Loading */
@@ -829,6 +897,7 @@
             height: 100%;
             opacity: 0;
             transition: opacity 0.8s ease;
+            will-change: opacity;
         }
 
         .billboard-slide.active { opacity: 1; }
@@ -2680,6 +2749,16 @@
                 height: 100px;
             }
         }
+        /* Performance Optimizations */
+        .section, .content-grid {
+            content-visibility: auto;
+            contain-intrinsic-size: 500px;
+        }
+
+        .movie-card {
+            will-change: transform;
+        }
+
     </style>
     <style>
         @media (max-width: 768px) {
@@ -2705,15 +2784,15 @@
     <!-- LOGO ANIMATION OVERLAY -->
     <div class="logo-animation-overlay" id="logoAnimation">
         <div class="logo-animation">
-            <div class="logo-animation-text">SIDS</div>
-            <div class="logo-animation-sub">Streaming Universe</div>
+            <div class="logo-animation-text">MASU MOVIES</div>
+            <div class="logo-loader-line"></div>
         </div>
     </div>
 
     <!-- HEADER -->
     <header id="mainHeader">
         <div class="logo-container" onclick="goHome()">
-            <div class="logo-text">SIDS</div>
+            <div class="logo-text">MasuMovie</div>
         </div>
 
         <nav class="nav-menu">
@@ -3232,9 +3311,9 @@
     <footer>
         <div class="footer-content">
             <div class="footer-brand">
-                <div class="logo-text">SIDS</div>
+                <div class="logo-text">MasuMovie</div>
                 <p class="footer-desc">
-                    Stream unlimited movies and TV shows in HD quality. Your entertainment destination.
+                    Your Ultimate Streaming Destination.
                 </p>
                 <div class="social-links">
                     <a class="social-link" href="#"><i class="fab fa-twitter"></i></a>
@@ -3278,7 +3357,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© 2024 SIDS. All rights reserved. This site does not store any files.</p>
+            <p>© 2026 MasuMovie. All rights reserved. This site does not store any files.</p>
         </div>
     </footer>
 
@@ -3441,11 +3520,20 @@
 
         // Initialize
         window.onload = async () => {
-            // Show logo animation
+            // Start initialization immediately in background
+            initializeApp();
+            
+            // Logo animation runs for ~4s via CSS
+            // We remove it from flow after animation completes
             setTimeout(() => {
-                document.getElementById('logoAnimation').style.display = 'none';
-                initializeApp();
-            }, 2500);
+                const loader = document.getElementById('logoAnimation');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                }
+            }, 3500);
         };
 
         async function initializeApp() {
@@ -4061,7 +4149,7 @@
                 
                 if (navigator.share) {
                     navigator.share({
-                        title: 'Join my watch party on SIDS!',
+                        title: 'Join my watch party on MasuMovie!',
                         text: `Use code ${watchParty.code} to join the party and watch together`,
                         url: url.toString()
                     });
@@ -4162,8 +4250,30 @@
             loadContinueWatching();
         }
 
+        // Helper: Throttle
+        function throttle(func, limit) {
+            let lastFunc;
+            let lastRan;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!lastRan) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now();
+                        }
+                    }, limit - (Date.now() - lastRan));
+                }
+            }
+        }
+
         // Scroll listeners
-        window.addEventListener('scroll', () => {
+        window.addEventListener('scroll', throttle(() => {
             const header = document.getElementById('mainHeader');
             if (window.scrollY > 50) {
                 header.classList.add('scrolled');
@@ -4178,14 +4288,14 @@
             } else {
                 scrollTopBtn.classList.remove('show');
             }
-        });
+        }, 100));
 
         function setupScrollListener() {
-            window.addEventListener('scroll', () => {
+            window.addEventListener('scroll', throttle(() => {
                 if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !isLoading) {
                     loadMore();
                 }
-            });
+            }, 200));
         }
 
         function scrollToTop() {
@@ -4445,7 +4555,7 @@
                 
                 container.innerHTML = providers.map(p => `
                     <div class="provider-card" onclick="loadByProvider(${p.provider_id}, '${p.provider_name.replace(/'/g, "\\'")}')" title="${p.provider_name}">
-                        <img src="https://image.tmdb.org/t/p/original${p.logo_path}" alt="${p.provider_name}" loading="lazy" style="image-rendering: -webkit-optimize-contrast;">
+                        <img src="https://image.tmdb.org/t/p/w500${p.logo_path}" alt="${p.provider_name}" loading="lazy" style="image-rendering: -webkit-optimize-contrast;">
                     </div>
                 `).join('');
             } catch (e) {
@@ -4816,7 +4926,7 @@
             const year = (item.release_date || item.first_air_date || '').split('-')[0];
             const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
             
-            backdrop.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${item.backdrop_path || item.poster_path}')`;
+            backdrop.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${item.backdrop_path || item.poster_path}')`;
             title.textContent = item.title || item.name;
             
             meta.innerHTML = `
@@ -4881,7 +4991,7 @@
                 if (navigator.share) {
                     navigator.share({
                         title: currentInfoItem.title || currentInfoItem.name,
-                        text: 'Check out this on SIDS!',
+                        text: 'Check out this on MasuMovie!',
                         url: url
                     }).then(() => showToast('Shared successfully!'))
                       .catch(() => {});
@@ -4992,8 +5102,19 @@
             renderBillboard();
             billboardTimer = setInterval(() => {
                 billboardIdx = (billboardIdx + 1) % billboardItems.length;
-                renderBillboard();
+                updateBillboardActiveState();
             }, 8000);
+        }
+
+        function updateBillboardActiveState() {
+            const slides = document.querySelectorAll('.billboard-slide');
+            slides.forEach((slide, idx) => {
+                if (idx === billboardIdx) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
         }
 
         function renderBillboard() {
@@ -5011,7 +5132,7 @@
                     const maxWidth = item.logo_aspect_ratio > 2 ? '400px' : '300px';
                     titleHtml = `
                         <div class="billboard-logo-container" style="margin-bottom: 24px;">
-                            <img src="https://image.tmdb.org/t/p/original${item.logo_path}" 
+                            <img src="https://image.tmdb.org/t/p/w500${item.logo_path}" 
                                  alt="${item.title || item.name}" 
                                  class="billboard-logo"
                                  style="max-width: ${maxWidth}; width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
@@ -5020,7 +5141,7 @@
 
                 return `
                     <div class="billboard-slide ${isActive ? 'active' : ''}">
-                        <div class="billboard-bg" style="background-image: url('https://image.tmdb.org/t/p/original${item.backdrop_path}')"></div>
+                        <div class="billboard-bg" style="background-image: url('https://image.tmdb.org/t/p/w1280${item.backdrop_path}')"></div>
                         <div class="billboard-overlay"></div>
                         <div class="billboard-content">
                             ${titleHtml}
