@@ -4169,12 +4169,6 @@
                 console.error('Watch party panel not found!');
                 return;
             }
-
-            if (!watchParty.active) {
-                showJoinPartyModal();
-                return;
-            }
-            
             panel.classList.toggle('active');
             serverPanel.classList.remove('active');
             
