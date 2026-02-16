@@ -3973,7 +3973,6 @@
                     }
                     broadcastPartyData({ type: 'update_users', users: watchParty.users });
                     
-                    // Sync current state
                     if (typeof curId !== 'undefined') {
                          senderConn.send({ 
                              type: 'sync_state', 
@@ -3981,6 +3980,7 @@
                              contentType: contentType, 
                              season: typeof currentSeason !== 'undefined' ? currentSeason : 1, 
                              episode: typeof currentEpisode !== 'undefined' ? currentEpisode : 1,
+                             server: currentServer,
                              playbackState: watchParty.playbackState,
                              currentTime: watchParty.currentTime
                          });
@@ -4006,23 +4006,25 @@
                     });
                 }
             } else if (data.type === 'sync_state') {
-                // Check if we need to change content
-                if (typeof curId !== 'undefined' && (curId !== data.contentId || contentType !== data.contentType || (contentType === 'tv' && (currentSeason !== data.season || currentEpisode !== data.episode)))) {
+                const needsContentChange = typeof curId !== 'undefined' && (curId !== data.contentId || contentType !== data.contentType || (contentType === 'tv' && (currentSeason !== data.season || currentEpisode !== data.episode)));
+                if (needsContentChange && data.contentId) {
                     showToast('Host changed content. Syncing...');
+                    if (data.server) {
+                        currentServer = data.server;
+                    }
                     contentType = data.contentType;
                     currentSeason = data.season;
                     currentEpisode = data.episode;
                     openContent(data.contentId);
+                } else if (data.server && data.server !== currentServer) {
+                    switchServer(data.server);
                 }
-                // Sync playback state if needed (implementation depends on player)
-                if (data.playbackState !== watchParty.playbackState) {
+                if (data.playbackState && data.playbackState !== watchParty.playbackState) {
                     watchParty.playbackState = data.playbackState;
                     updateEnhancedPartyUI();
-                    
-                    // Try to control player
                     if (data.playbackState === 'playing') {
                         tryControlPlayer('play');
-                    } else {
+                    } else if (data.playbackState === 'paused') {
                         tryControlPlayer('pause');
                     }
                 }
@@ -4047,17 +4049,15 @@
             
             watchParty.syncInterval = setInterval(() => {
                 if (!watchParty.active || !watchParty.host) return;
-                
-                // Check for state changes
                 const currentState = {
                     contentId: typeof curId !== 'undefined' ? curId : null,
                     contentType: typeof contentType !== 'undefined' ? contentType : 'movie',
                     season: typeof currentSeason !== 'undefined' ? currentSeason : 1,
                     episode: typeof currentEpisode !== 'undefined' ? currentEpisode : 1,
+                    server: currentServer,
                     playbackState: watchParty.playbackState,
-                    currentTime: watchParty.currentTime // You'd need to get this from actual player
+                    currentTime: watchParty.currentTime
                 };
-                
                 broadcastPartyData({ type: 'sync_state', ...currentState });
             }, 2000);
         }
@@ -4071,11 +4071,11 @@
             watchParty.currentVideo = { id, type };
             watchParty.playbackState = 'playing';
             watchParty.currentTime = 0;
-            
             broadcastPartyData({ 
                 type: 'sync_state', 
                 contentId: id, 
                 contentType: type,
+                server: currentServer,
                 playbackState: 'playing',
                 currentTime: 0
             });
