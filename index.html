@@ -4235,9 +4235,11 @@
             });
         }
 
-        // Close panels when clicking outside
+        // Close panels when clicking outside floating controls or mini taskbar
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.floating-controls')) {
+            const clickedFloatingControls = e.target.closest('.floating-controls');
+            const clickedMiniTaskbar = e.target.closest('.mini-taskbar');
+            if (!clickedFloatingControls && !clickedMiniTaskbar) {
                 document.getElementById('watchPartyPanel').classList.remove('active');
                 document.getElementById('serverPanel').classList.remove('active');
             }
@@ -5993,4 +5995,3 @@
     </script>
 </body>
 </html>
-S
